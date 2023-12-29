@@ -7,14 +7,15 @@ const pool = require('../db');
 
 // Regisztráció
 router.post('/register', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, email, password } = req.body;
 
   // Hasheljük a jelszót
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  const role = "user"
   try {
     // Vegyük fel az új felhasználót az adatbázisba
-    await pool.query('INSERT INTO users (username, password_hash) VALUES (?, ?)', [username, hashedPassword]);
+    await pool.query('INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)', [username, email, hashedPassword, role]);
     res.status(201).json({ message: 'Registration successful.' });
   } catch (error) {
     console.error('Error registering user:', error.message);
@@ -25,6 +26,7 @@ router.post('/register', async (req, res) => {
 // Bejelentkezés
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
+  console.log(username)
 
   try {
     // Ellenőrizzük a felhasználónevet és a jelszót
@@ -70,7 +72,7 @@ router.get('/logout', (req, res) => {
 // Azonosítás ellenőrzése
 router.get('/check-auth', (req, res) => {
   if (req.session.userId) {
-    res.json({ authenticated: true });
+    res.json({ authenticated: true, userId: req.session.userId, username: req.session.username});
   } else {
     res.json({ authenticated: false });
   }

@@ -8,7 +8,7 @@ const User = require('../models/user');
 router.get('/', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM users');
-    const users = rows.map(row => new User(row.user_id, row.username, row.email, row.password_hash, row.profile_img_url));
+    const users = rows.map(row => new User(row.user_id, row.username, row.email, row.password_hash, row.profile_img_url, row.role));
     res.json(users);
   } catch (error) {
     console.error('Error fetching users:', error.message);
@@ -16,23 +16,23 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST a new user
-router.post('/', async (req, res) => {
-    console.log(req.body)
-    const { username, email, password, profileImgUrl, role} = req.body;
-  
-    try {
-      const [result] = await pool.query(
-        'INSERT INTO users (username, email, password_hash, profile_image_url, role) VALUES (?, ?, ?, ?, ?)',
-        [username, email, password, profileImgUrl, role]
-      );
-  
-      const newUser = new User(result.insertId, username, email, password, profileImgUrl);
-      res.status(201).json(newUser);
-    } catch (error) {
-      console.error('Error creating user:', error.message);
-      res.status(500).json({ error: 'Internal Server Error' });
+// GET a specific user
+router.get('/:userId', async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    const [rows] = await pool.query('SELECT * FROM users WHERE user_id = ?', [userId]);
+
+    if (rows.length === 1) {
+      const user = rows[0];
+      res.json(user);
+    } else {
+      res.status(404).json({ error: 'User not found' });
     }
+  } catch (error) {
+    console.error('Error fetching user:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 // DELETE a user by ID
@@ -60,7 +60,7 @@ router.put('/:userId', async (req, res) => {
   
     try {
       const [result] = await pool.query(
-        'UPDATE users SET username = ?, email = ?, password_hash = ?, profile_image_url = ? role = ? WHERE user_id = ?',
+        'UPDATE users SET username = ?, email = ?, password_hash = ?, profile_image_url = ?, role = ? WHERE user_id = ?',
         [username, email, password, profileImgUrl, role, userId]
       );
   
