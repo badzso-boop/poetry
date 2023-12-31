@@ -4,6 +4,15 @@ const router = express.Router();
 const pool = require('../db');
 const User = require('../models/user');
 
+// Egy middleware, ami ellenőrzi, hogy a felhasználó be van-e jelentkezve
+const checkAuth = (req, res, next) => {
+  if (req.session && req.session.userId && req.session.role == "admin") {
+    return next();
+  } else {
+    res.status(401).json({ error: 'Unauthorized' });
+  }
+};
+
 // GET all users
 router.get('/', async (req, res) => {
   try {

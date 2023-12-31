@@ -8,7 +8,7 @@ const Like = require('../models/like')
 
 // Egy middleware, ami ellenőrzi, hogy a felhasználó be van-e jelentkezve
 const checkAuth = (req, res, next) => {
-  if (req.session && req.session.userId) {
+  if (req.session && req.session.userId && req.session.role == "admin") {
     return next();
   } else {
     res.status(401).json({ error: 'Unauthorized' });
@@ -220,39 +220,4 @@ router.post('/like/:poemId', checkAuth, async (req, res) => {
   }
 });
 
-// POST comment to a specific poem
-router.post('/comment/:poemId', checkAuth, async (req, res) => {
-  const poemId = req.params.poemId;
-  const userId = req.session.userId; // Az autentikációs middleware-n keresztül hozzáférünk a bejelentkezett felhasználóhoz
-  const { commentText } = req.body;
-
-  try {
-    // Ellenőrizzük, hogy a vers létezik
-    const [poemRows] = await pool.query('SELECT * FROM poems WHERE poem_id = ?', [poemId]);
-
-    if (poemRows.length !== 1) {
-      return res.status(404).json({ error: 'Poem not found.' });
-    }
-
-    // Beszúrjuk a kommentet az adatbázisba
-    const [result] = await pool.query('INSERT INTO comments (user_id, poem_id, comment_text, date_commented) VALUES (?, ?, ?, NOW())', [userId, poemId, commentText]);
-
-    const newCommentId = result.insertId;
-
-    // Lehetőség van visszaküldeni a frissen beszúrt komment adatait
-    const [commentRows] = await pool.query('SELECT * FROM comments WHERE comment_id = ?', [newCommentId]);
-
-    if (commentRows.length === 1) {
-      const newComment = commentRows[0];
-      res.status(201).json(newComment);
-    } else {
-      res.status(500).json({ error: 'Failed to retrieve the new comment.' });
-    }
-  } catch (error) {
-    console.error('Error adding comment:', error.message);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
 module.exports = router;
-      

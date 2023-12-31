@@ -5,6 +5,9 @@ const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
 const poemRoutes = require('./routes/poemRoutes');
 const authRoutes = require('./routes/authRoutes');
+const commentRoutes = require('./routes/commentRoutes');
+const albumRoutes = require('./routes/albumRoutes');
+const followRoutes = require('./routes/followRoutes');
 
 const app = express();
 const port = 3000;
@@ -28,12 +31,13 @@ app.use(session({
     saveUninitialized: true
 }));
 
-
-
 // Routes
 app.use('/users', userRoutes);
 app.use('/poems', poemRoutes);
 app.use('/auth', authRoutes);
+app.use('/comments', commentRoutes);
+app.use('/albums', albumRoutes);
+app.use('/follows', followRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

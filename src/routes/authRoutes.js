@@ -42,6 +42,7 @@ router.post('/login', async (req, res) => {
         // Sikeres bejelentkezés
         req.session.userId = user.user_id; // Példa: session használata
         req.session.username = user.username
+        req.session.role = user.role
 
         res.json({ message: 'Login successful.' });
       } else {
