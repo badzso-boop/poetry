@@ -3,6 +3,12 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const User = require('../models/user');
+const Comment = require('../models/comment');
+const Like = require('../models/like');
+const Poem = require('../models/poem');
+
+const Functions = require('../helpers/functions');
+
 
 // Egy middleware, ami ellenőrzi, hogy a felhasználó be van-e jelentkezve
 const checkAuth = (req, res, next) => {
@@ -30,10 +36,24 @@ router.get('/:userId', async (req, res) => {
   const userId = req.params.userId;
 
   try {
-    const [rows] = await pool.query('SELECT * FROM users WHERE user_id = ?', [userId]);
+    const [userRows] = await pool.query('SELECT * FROM users WHERE user_id = ?', [userId]);
 
-    if (rows.length === 1) {
-      const user = rows[0];
+    const poems = await Functions.getPoemsByUser(userId)
+
+    const [albumRows] = await pool.query('SELECT * FROM albums WHERE user_id = ?', [userId])
+
+    let albumsWithPoems = {}
+
+    if (albumRows.length > 1) {
+      albumsWithPoems = await Promise.all(albumRows.map(async (album) => {
+        const albumWithPoems = await Functions.getAlbumsByUser(album.user_id)
+
+        return albumWithPoems
+      }))
+    }
+
+    if (userRows.length === 1) {
+      const user = new User(userRows[0].user_id, userRows[0].username, userRows[0].email, userRows[0].password_hash, userRows[0].profile_image_url, userRows[0].role, poems, albumsWithPoems)
       res.json(user);
     } else {
       res.status(404).json({ error: 'User not found' });
