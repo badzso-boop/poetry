@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import UserContext from '../context/userContext';
 
 const Navbar = () => {
-  const { user } = useContext(UserContext);
+  const { user, userId } = useContext(UserContext);
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -32,7 +32,19 @@ const Navbar = () => {
               <Link to="/poems" className="nav-link">Poems</Link>
             </li>
             <li className="nav-item">
+              <Link to="/albums" className="nav-link">Albums</Link>
+            </li>
+            { userId ? <li className="nav-item">
+              <Link to="/profile" className="nav-link">Profile</Link>
+            </li> : <span></span>}
+            {/* <li className="nav-item">
+              <Link to="/profile" className="nav-link">Profile</Link>
+            </li> */}
+            <li className="nav-item">
               <Link to="/uploadpoem" className="nav-link">Upload Poem</Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/uploadalbum" className="nav-link">Upload Album</Link>
             </li>
           </ul>
         </div>

@@ -4,7 +4,7 @@ import React, { useContext, useState } from 'react';
 import UserContext from '../context/userContext';
 
 const Login = () => {
-    const { setUser } = useContext(UserContext);
+    const { setUser, setUserId } = useContext(UserContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -28,7 +28,10 @@ const Login = () => {
 
       if (response.ok) {
         // Sikeres bejelentkezés, kezelheted a választ itt
+        const responseData = await response.json();
+        const userId = responseData.userId;
         setUser({ username: username });
+        setUserId(userId)
         console.log('Successful login');
       } else {
         // Sikertelen bejelentkezés, kezelheted a választ itt
