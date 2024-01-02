@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2024. Jan 03. 00:35
+-- Létrehozás ideje: 2024. Jan 03. 00:43
 -- Kiszolgáló verziója: 10.4.25-MariaDB
 -- PHP verzió: 8.1.10
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Adatbázis: `poetry`
 --
+CREATE DATABASE IF NOT EXISTS `poetry` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `poetry`;
 
 -- --------------------------------------------------------
 
