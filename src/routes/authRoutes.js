@@ -44,7 +44,7 @@ router.post('/login', async (req, res) => {
         req.session.username = user.username
         req.session.role = user.role
 
-        res.json({ message: 'Login successful.' });
+        res.json({ message: 'Login successful.', userId: user.user_id });
       } else {
         res.status(401).json({ error: 'Invalid password.' });
       }
