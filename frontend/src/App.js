@@ -26,7 +26,7 @@ function App() {
           <Navbar />
           <div className="container mt-5">
             <div className="row">
-              <div className="col-md-6">
+              <div className="col-12">
                 <Routes>
                   <Route path="/" element={<Login />} />
                   <Route path="/login" element={<Login />} />

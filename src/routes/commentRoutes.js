@@ -7,6 +7,7 @@ const Like = require('../models/like')
 
 // Egy middleware, ami ellenőrzi, hogy a felhasználó be van-e jelentkezve
 const checkAuth = (req, res, next) => {
+  console.log(req.session)
   if (req.session && req.session.userId) {
     return next();
   } else {
@@ -70,6 +71,10 @@ router.delete('/:commentId', checkAuth, async (req, res) => {
     const commentId = req.params.commentId;
     const userId = req.session.userId;
     const role = req.session.role;
+    
+    // console.log(commentId)
+    // console.log(req.session.userId + " - " + req.session.role)
+    // console.log(userId + " - " + role)
 
     try {
         //ellenorzes, hogy az adott kommentet azt a felhasznalo hozta-e letre
@@ -105,40 +110,41 @@ router.delete('/:commentId', checkAuth, async (req, res) => {
 // PUT (update) a specific comment
 // only if the logged in user is the author of the comment
 router.put('/:commentId', checkAuth, async (req, res) => {
-    const commentId = req.params.commentId;
-    const { commentText } = req.body;
+  const commentId = req.params.commentId;
+  const { commentText } = req.body;
+  
+  try {
+    // Lekérjük a komment adatait az adatbázisból
+    const [commentResult] = await pool.query('SELECT user_id FROM comments WHERE comment_id = ?', [commentId]);
     
-    try {
-      // Lekérjük a komment adatait az adatbázisból
-      const [commentResult] = await pool.query('SELECT user_id FROM comments WHERE comment_id = ?', [commentId]);
-      
-      if (commentResult.length === 0) {
-        // A komment nem található
-        return res.status(404).json({ error: 'Comment not found.' });
-      }
-      
-      const originalUserId = commentResult[0].user_id;
-      
-      // Ellenőrizzük, hogy a bejelentkezett felhasználó azonos-e a komment eredeti tulajdonosával
-      if (originalUserId !== req.session.userId) {
-        return res.status(403).json({ error: 'Unauthorized - User does not have permission to edit this comment.' });
-      }
-      
-      // A bejelentkezett felhasználó azonos a komment eredeti tulajdonosával, folytathatjuk a szerkesztést
-      const [updateResult] = await pool.query(
-        'UPDATE comments SET comment_text = ? WHERE comment_id = ?',
-        [commentText, commentId]
-      );
-        
-      if (updateResult.affectedRows === 1) {
-        res.json({ message: 'Comment updated successfully.' });
-      } else {
-        res.status(500).json({ error: 'Internal Server Error - Failed to update comment.' });
-      }
-    } catch (error) {
-        console.error('Error updating comment:', error.message);
-        res.status(500).json({ error: 'Internal Server Error' });
+    if (commentResult.length === 0) {
+      // A komment nem található
+      return res.status(404).json({ error: 'Comment not found.' });
     }
+    
+    const originalUserId = commentResult[0].user_id;
+    
+    // Ellenőrizzük, hogy a bejelentkezett felhasználó azonos-e a komment eredeti tulajdonosával
+    // vagy az admin jogosultságokkal rendelkezik-e
+    if (originalUserId !== req.session.userId && req.session.role !== "admin") {
+      return res.status(403).json({ error: 'Unauthorized - User does not have permission to edit this comment.' });
+    }
+    
+    // A bejelentkezett felhasználó azonos a komment eredeti tulajdonosával vagy admin, folytathatjuk a szerkesztést
+    const [updateResult] = await pool.query(
+      'UPDATE comments SET comment_text = ? WHERE comment_id = ?',
+      [commentText, commentId]
+    );
+      
+    if (updateResult.affectedRows === 1) {
+      res.json({ message: 'Comment updated successfully.' });
+    } else {
+      res.status(500).json({ error: 'Internal Server Error - Failed to update comment.' });
+    }
+  } catch (error) {
+    console.error('Error updating comment:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 // GET comments from a specific user

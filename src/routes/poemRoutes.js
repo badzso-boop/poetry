@@ -145,18 +145,37 @@ router.delete('/:poemId', async (req, res) => {
     if (originalUserId !== req.session.userId) {
       return res.status(403).json({ error: 'Unauthorized - User does not have permission to edit this poem.' });
     }
-    
-    const [result] = await pool.query('DELETE FROM poems WHERE poem_id = ?', [poemId]);
-    
-    if (result.affectedRows === 1) {
-            res.json({ message: 'Poem deleted successfully.' });
-        } else {
-          res.status(404).json({ error: 'Poem not found.' });
-        }
-      } catch (error) {
-        console.error('Error deleting poem:', error.message);
-        res.status(500).json({ error: 'Internal Server Error' });
+
+    // Tranzakció indul
+    await pool.query('START TRANSACTION');
+
+    try {
+      // Először töröljük a likes táblából az adott vershez tartozó sorokat
+      await pool.query('DELETE FROM likes WHERE poem_id = ?', [poemId]);
+
+      // Majd a comments táblából is töröljük az adott vershez tartozó sorokat
+      await pool.query('DELETE FROM comments WHERE poem_id = ?', [poemId]);
+
+      // Végül töröljük a poems táblából az adott verset
+      const [result] = await pool.query('DELETE FROM poems WHERE poem_id = ?', [poemId]);
+
+      // Tranzakció commit
+      await pool.query('COMMIT');
+
+      if (result.affectedRows === 1) {
+        res.json({ message: 'Poem deleted successfully.' });
+      } else {
+        res.status(404).json({ error: 'Poem not found.' });
       }
+    } catch (error) {
+      // Tranzakció visszavonása hiba esetén
+      await pool.query('ROLLBACK');
+      throw error;
+    }
+  } catch (error) {
+    console.error('Error deleting poem:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
     
 // PUT (update) a poem by ID
