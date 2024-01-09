@@ -1,12 +1,12 @@
 // src/components/Login.js
 
 import React, { useContext, useState } from 'react';
-import UserContext from '../context/userContext';
+import { AppContext } from '../context/AppContext';
 
 const Login = () => {
-    const { setUser, setUserId } = useContext(UserContext);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+  const { setUser, setUserId } = useContext(AppContext);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();

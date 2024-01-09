@@ -33,10 +33,12 @@ router.get('/', async (req, res) => {
         [row.poem_id]
       );
 
+
       const comments = commentRows.map((commentRow) => new Comment(commentRow.comment_id, commentRow.user_id, commentRow.poem_id, commentRow.comment_text, commentRow.date_commented, commentRow.commenter));
       const likes = likeRows.map((likeRow) => new Like(likeRow.like_id, likeRow.user_id, likeRow.poem_id, likeRow.date_liked, likeRow.username));
+      const likeDb = likeRows.length;
 
-      return new Poem(row.poem_id, row.title, row.content, row.user_id, row.creation_date, row.author, likes, comments);
+      return new Poem(row.poem_id, row.title, row.content, row.user_id, row.creation_date, row.author, likes, likeDb, comments);
     });
 
     const poemsWithLikesComments = await Promise.all(poems);

@@ -1,12 +1,12 @@
 // src/components/UploadPoems.js
 
 import React, { useState, useContext } from 'react';
-import UserContext from '../context/userContext';
+import { AppContext } from '../context/AppContext';
 
 const UploadPoems = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const { user } = useContext(UserContext);
+  const { user, setPoemUpload } = useContext(AppContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,6 +36,7 @@ const UploadPoems = () => {
       if (response.ok) {
         // Sikeres vers feltöltés, kezelheted a választ itt
         console.log('Poem uploaded successfully');
+        setPoemUpload(title)
         // Tisztítjuk az űrlap mezőket
         setTitle('');
         setContent('');

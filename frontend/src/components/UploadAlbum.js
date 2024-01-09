@@ -2,7 +2,7 @@
 
 import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
-import UserContext from '../context/userContext';
+import { AppContext } from '../context/AppContext';
 
 const UploadAlbum = () => {
   const [title, setTitle] = useState('');
@@ -11,7 +11,7 @@ const UploadAlbum = () => {
   const [poems, setPoems] = useState([]);
   const [error, setError] = useState(null);
 
-  const { user, userId } = useContext(UserContext);
+  const { user, userId, setAlbumUpload } = useContext(AppContext);
   
   useEffect(() => {
     const fetchPoems = async () => {
@@ -36,7 +36,7 @@ const UploadAlbum = () => {
     };
 
     fetchPoems();
-  }, []);
+  }, [user, userId]);
 
   const handleCheckboxChange = (poemId) => {
     // Itt kezelheted a checkbox változását
@@ -74,6 +74,7 @@ const UploadAlbum = () => {
         // Sikeres vers feltöltés, kezelheted a választ itt
         console.log('Album uploaded successfully');
         // Tisztítjuk az űrlap mezőket
+        setAlbumUpload(title)
         setTitle('');
         setContent('');
         setPoemIds([])

@@ -1,10 +1,10 @@
 // src/components/Logout.js
 
 import React, { useContext } from 'react';
-import UserContext from '../context/userContext';
+import { AppContext } from '../context/AppContext';
 
 const Logout = () => {
-  const { setUser } = useContext(UserContext);
+  const { setUser } = useContext(AppContext);
 
   const handleLogout = async () => {
     try {

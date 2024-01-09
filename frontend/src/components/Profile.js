@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import UserContext from "../context/userContext";
+import { AppContext } from '../context/AppContext';
 
 const Profile = () => {
   const [users, setUsers] = useState([]);
@@ -12,7 +12,7 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const [editingState, setEditingState] = useState({});
 
-  const { user, userId } = useContext(UserContext);
+  const { user, userId, setUser } = useContext(AppContext);
 
   const handleDelete = async (event) => {
     event.preventDefault();
@@ -214,7 +214,7 @@ const Profile = () => {
           `http://localhost:3000/users/${userid}`,
           { withCredentials: true }
         );
-        setUsers(response.data);
+        setUser(response.data);
       } catch (error) {
         console.error("Error fetching poems:", error.message);
         setError("Error fetching poems");
@@ -224,17 +224,19 @@ const Profile = () => {
     fetchUser();
   }, [poemId, editingState, commentId, editingStateComment]);
 
+  console.log(user)
+
   return (
-    users && (
+    user && (
       <div>
         {/* <!-- Felhasználói adatok --> */}
         <div className="col-12 mb-4">
           <div className="card">
             <div className="card-body">
-              <h4 className="card-title">{users.username}</h4>
-              <p className="card-text">E-mail cím: {users.email}</p>
-              <p className="card-text">Profil kép: {users.profileImgUrl}</p>
-              <p className="card-text">Rang: {users.role}</p>
+              <h4 className="card-title">{user.username}</h4>
+              <p className="card-text">E-mail cím: {user.email}</p>
+              <p className="card-text">Profil kép: {user.profileImgUrl}</p>
+              <p className="card-text">Rang: {user.role}</p>
             </div>
           </div>
         </div>
@@ -245,8 +247,8 @@ const Profile = () => {
             <div className="col-6">
               <h2>Összes Vers</h2>
               <ul className="list-group">
-                {users.poems &&
-                  users.poems.map((poem, index) => (
+                {user.poems &&
+                  user.poems.map((poem, index) => (
                     <li
                       key={index}
                       className="list-group-item"
@@ -315,7 +317,7 @@ const Profile = () => {
                         <div className="card-body">
                           <h5 className="card-title">Kommentek</h5>
                           <ul className="list-group">
-                            {poem.comments.map((comment, index) => (
+                            {poem.comments && poem.comments.map((comment, index) => (
                               <li
                                 key={index}
                                 className="list-group-item"
@@ -381,8 +383,8 @@ const Profile = () => {
             {/* <!-- Albumokat tartalmazó jobb oszlop --> */}
             <div className="col-6">
               <h2>Albumok</h2>
-              {users.albums &&
-                users.albums[0].map((album, index) => (
+              {user.albums &&
+                user.albums[0].map((album, index) => (
                   <div key={index} className="card m-3">
                     <div className="card-body">
                       <h5 className="card-title">{album.title}</h5>

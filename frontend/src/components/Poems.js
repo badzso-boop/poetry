@@ -1,39 +1,61 @@
 // src/components/Poems.js
 
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
+
+import { AppContext } from '../context/AppContext';
 
 const Poems = () => {
-  const [poems, setPoems] = useState([]);
+  const { poems } = useContext(AppContext);
 
-  useEffect(() => {
-    const fetchPoems = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/poems', { withCredentials: true });
-        setPoems(response.data);
-      } catch (error) {
-        console.error('Error fetching poems:', error.message);
-      }
-    };
-
-    fetchPoems();
-
-  }, []);
+  
 
   return (
-    <div>
-      <h2>Poems</h2>
-      <ul>
-        {poems.map((poem, index) => (
-          <li key={index}>
-            <strong>{poem.title}</strong>
-            <p>{poem.content}</p>
-            <strong>{poem.author}</strong>
-            <p>{poem.creationDate}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <>
+      {poems && poems.length > 0 ? (
+        <>
+          <div>
+            <h2>Poems</h2>
+            <ul>
+              {poems.map((poem, index) => (
+                <li key={index}>
+                  <Link to={`/poems/${index}`}>
+                    <strong>{poem.title}</strong>
+                  </Link>
+                  <p>{poem.content}</p>
+                  <strong>{poem.author}</strong>
+                  <p>{poem.creationDate}</p>
+                  <span><strong>Likeok: </strong> {poem.likeDb} db</span>
+                  <ul>
+                    {poem.likes.map((like, index) => (
+                      <li key={index}>{like.username}</li>
+                    ))}
+                  </ul>
+                  <span><strong>Kommentek:</strong> {poem.comments.length} db</span>
+                  <ul className="list-group">
+                    {poem.comments.map((comment, index) => (
+                      <li
+                        key={index}
+                        className="list-group-item"
+                        data-commentid={comment.id}
+                      >
+                        {comment.commenter}: {comment.commentText} (
+                        {comment.dateCommented})
+                        
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+      ) : (
+        <>
+          <p>A versek meg nem toltottek be</p>
+        </>
+      )}
+    </>
   );
 };
 

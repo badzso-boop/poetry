@@ -2,10 +2,10 @@
 
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import UserContext from '../context/userContext';
+import { AppContext } from '../context/AppContext';
 
 const Navbar = () => {
-  const { user, userId } = useContext(UserContext);
+  const { user, userId } = useContext(AppContext);
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -40,12 +40,18 @@ const Navbar = () => {
             {/* <li className="nav-item">
               <Link to="/profile" className="nav-link">Profile</Link>
             </li> */}
-            <li className="nav-item">
-              <Link to="/uploadpoem" className="nav-link">Upload Poem</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/uploadalbum" className="nav-link">Upload Album</Link>
-            </li>
+            {user ? (
+                <>
+                  <li className="nav-item">
+                    <Link to="/uploadpoem" className="nav-link">Upload Poem</Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/uploadalbum" className="nav-link">Upload Album</Link>
+                  </li>
+                </>
+              ) : (
+                <></>
+              )}
           </ul>
         </div>
       </div>
