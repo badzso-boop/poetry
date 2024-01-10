@@ -8,7 +8,7 @@ const Like = require('../models/like')
 
 // Egy middleware, ami ellenőrzi, hogy a felhasználó be van-e jelentkezve
 const checkAuth = (req, res, next) => {
-  if (req.session && req.session.userId && req.session.role == "admin") {
+  if (req.session && req.session.userId) {
     return next();
   } else {
     res.status(401).json({ error: 'Unauthorized' });

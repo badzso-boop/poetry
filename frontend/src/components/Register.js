@@ -2,10 +2,14 @@
 
 import React, { useState } from 'react';
 
+import BadgeAlert from './BadgeAlert';
+
 const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [registrationSuccess, setRegistrationSuccess] = useState(null);
+  const [registrationText, setRegistrationText] = useState("")
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,9 +33,14 @@ const Register = () => {
       if (response.ok) {
         // Sikeres regisztráció, kezelheted a választ itt
         console.log('Successful registration');
+        setRegistrationSuccess(true);
+        setRegistrationText("Sikeres regisztráció")
       } else {
         // Sikertelen regisztráció, kezelheted a választ itt
         console.error('Registration failed');
+        const responseData = await response.json();
+        setRegistrationSuccess(false);
+        setRegistrationText(responseData.errorMessage); 
       }
     } catch (error) {
       console.error('Error during registration:', error.message);
@@ -82,6 +91,13 @@ const Register = () => {
           Register
         </button>
       </form>
+
+      {registrationSuccess !== null && (
+        <BadgeAlert
+          success={registrationSuccess}
+          text={registrationText}
+        />
+      )}
     </div>
   );
 };

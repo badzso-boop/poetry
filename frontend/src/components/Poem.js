@@ -8,12 +8,25 @@ const Poem = (() => {
 
     const poem = poems[poemId]
 
+    const renderContentWithLineBreaks = () => {
+      if (!poem) return null;
+  
+      const contentWithBreaks = poem.content.split('\n').map((line, index) => (
+        <React.Fragment key={index}>
+          {line}
+          <br />
+        </React.Fragment>
+      ));
+  
+      return contentWithBreaks;
+    };
+
     return (
         <>
           {poem && poems.length > 0 ? (
             <>
               <strong>{poem.title}</strong>
-              <p>{poem.content}</p>
+              <p>{renderContentWithLineBreaks()}</p>
               <strong>{poem.author}</strong>
               <p>{poem.creationDate}</p>
               <span>

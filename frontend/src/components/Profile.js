@@ -224,12 +224,11 @@ const Profile = () => {
     fetchUser();
   }, [poemId, editingState, commentId, editingStateComment]);
 
-  console.log(user)
-
   return (
     user && (
       <div>
         {/* <!-- Felhasználói adatok --> */}
+
         <div className="col-12 mb-4">
           <div className="card">
             <div className="card-body">
@@ -241,189 +240,208 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* <!-- Verseket tartalmazó bal oszlop --> */}
+        
+
+
         <div className="container">
           <div className="row">
+            {/* <!-- Verseket tartalmazó bal oszlop --> */}
             <div className="col-6">
               <h2>Összes Vers</h2>
               <ul className="list-group">
-                {user.poems &&
-                  user.poems.map((poem, index) => (
-                    <li
-                      key={index}
-                      className="list-group-item"
-                      data-poemid={poem.id}
-                    >
-                      <strong>{poem.title}</strong>
-                      <p>{poem.content}</p>
-                      <strong>{poem.author}</strong>
-                      <p>{poem.creationDate}</p>
+                {user.poems && user.poems.length > 0 ? (
+                  <>
+                    {user.poems.map((poem, index) => (
+                      <li
+                        key={index}
+                        className="list-group-item"
+                        data-poemid={poem.id}
+                      >
+                        <strong>{poem.title}</strong>
+                        <p>{poem.content}</p>
+                        <strong>{poem.author}</strong>
+                        <p>{poem.creationDate}</p>
 
-                      <form onSubmit={handleDelete}>
-                        <label>
-                          <input
-                            type="text"
-                            name="poemId"
-                            value={poem.id}
-                            style={{ display: "none" }}
-                            readOnly
-                          />
-                        </label>
-                        <button type="submit">Vers törlése</button>
-                      </form>
-
-                      {editingState[poem.id]?.editing ? (
-                        // Szerkesztő űrlap
-                        <form onSubmit={(e) => handleEditSubmit(poem.id, e)}>
+                        <form onSubmit={handleDelete}>
                           <label>
-                            Title:
                             <input
                               type="text"
-                              name="title"
-                              value={
-                                editingState[poem.id]?.editedPoem.title || ""
-                              }
-                              onChange={handleInputChange}
+                              name="poemId"
+                              value={poem.id}
+                              style={{ display: "none" }}
+                              readOnly
                             />
                           </label>
-                          <label>
-                            Content:
-                            <input
-                              type="text"
-                              name="content"
-                              value={
-                                editingState[poem.id]?.editedPoem.content || ""
-                              }
-                              onChange={handleInputChange}
-                            />
-                          </label>
-                          <button type="submit">Vers Szerkesztése</button>
+                          <button type="submit">Vers törlése</button>
                         </form>
-                      ) : (
-                        // Szerkesztő gomb
-                        <button onClick={() => handleEditClick(poem.id, poem)}>
-                          Vers szerkesztése
-                        </button>
-                      )}
 
-                      <br />
-                      <strong>Likeok</strong>
-                      <ul>
-                        {poem.likes.map((like, index) => (
-                          <li key={index}>{like.username}</li>
-                        ))}
-                      </ul>
-                      <div className="card">
-                        <div className="card-body">
-                          <h5 className="card-title">Kommentek</h5>
-                          <ul className="list-group">
-                            {poem.comments && poem.comments.map((comment, index) => (
-                              <li
-                                key={index}
-                                className="list-group-item"
-                                data-commentid={comment.id}
-                              >
-                                {comment.commenter}: {comment.commentText} (
-                                {comment.dateCommented})
-                                {editingStateComment[comment.id]?.editing ? (
-                                  <div>
-                                    <form
-                                      onSubmit={(e) =>
-                                        handleEditSubmitComment(comment.id, e)
-                                      }
-                                    >
-                                      <label>
-                                        Comment text:
-                                        <input
-                                          type="text"
-                                          name="commentText"
-                                          value={
-                                            editingStateComment[comment.id]
-                                              ?.editedComment.commentText || ""
-                                          }
-                                          onChange={handleInputChangeComment}
-                                        />
-                                      </label>
-                                      <button type="submit">
-                                        Komment mentése
-                                      </button>
-                                    </form>
-                                  </div>
-                                ) : (
-                                  <div>
-                                    <button
-                                      onClick={() =>
-                                        handleEditClickComment(
-                                          comment.id,
-                                          comment
-                                        )
-                                      }
-                                    >
-                                      Komment szerkesztése
-                                    </button>
-                                  </div>
-                                )}
-                                <button
-                                  onClick={() =>
-                                    handleDeleteClickComment(comment.id)
-                                  }
+                        {editingState[poem.id]?.editing ? (
+                          // Szerkesztő űrlap
+                          <form onSubmit={(e) => handleEditSubmit(poem.id, e)}>
+                            <label>
+                              Title:
+                              <input
+                                type="text"
+                                name="title"
+                                value={
+                                  editingState[poem.id]?.editedPoem.title || ""
+                                }
+                                onChange={handleInputChange}
+                              />
+                            </label>
+                            <label>
+                              Content:
+                              <input
+                                type="text"
+                                name="content"
+                                value={
+                                  editingState[poem.id]?.editedPoem.content || ""
+                                }
+                                onChange={handleInputChange}
+                              />
+                            </label>
+                            <button type="submit">Vers Szerkesztése</button>
+                          </form>
+                        ) : (
+                          // Szerkesztő gomb
+                          <button onClick={() => handleEditClick(poem.id, poem)}>
+                            Vers szerkesztése
+                          </button>
+                        )}
+
+                        <br />
+                        <strong>Likeok</strong>
+                        <ul>
+                          {poem.likes.map((like, index) => (
+                            <li key={index}>{like.username}</li>
+                          ))}
+                        </ul>
+                        <div className="card">
+                          <div className="card-body">
+                            <h5 className="card-title">Kommentek</h5>
+                            <ul className="list-group">
+                              {poem.comments && poem.comments.map((comment, index) => (
+                                <li
+                                  key={index}
+                                  className="list-group-item"
+                                  data-commentid={comment.id}
                                 >
-                                  Komment törlése
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
+                                  {comment.commenter}: {comment.commentText} (
+                                  {comment.dateCommented})
+                                  {editingStateComment[comment.id]?.editing ? (
+                                    <div>
+                                      <form
+                                        onSubmit={(e) =>
+                                          handleEditSubmitComment(comment.id, e)
+                                        }
+                                      >
+                                        <label>
+                                          Comment text:
+                                          <input
+                                            type="text"
+                                            name="commentText"
+                                            value={
+                                              editingStateComment[comment.id]
+                                                ?.editedComment.commentText || ""
+                                            }
+                                            onChange={handleInputChangeComment}
+                                          />
+                                        </label>
+                                        <button type="submit">
+                                          Komment mentése
+                                        </button>
+                                      </form>
+                                    </div>
+                                  ) : (
+                                    <div>
+                                      <button
+                                        onClick={() =>
+                                          handleEditClickComment(
+                                            comment.id,
+                                            comment
+                                          )
+                                        }
+                                      >
+                                        Komment szerkesztése
+                                      </button>
+                                    </div>
+                                  )}
+                                  <button
+                                    onClick={() =>
+                                      handleDeleteClickComment(comment.id)
+                                    }
+                                  >
+                                    Komment törlése
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
                         </div>
-                      </div>
-                    </li>
-                  ))}
+                      </li>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <p>Még nincsenek verseid feltöltve</p>
+                  </>
+                )}
               </ul>
             </div>
 
             {/* <!-- Albumokat tartalmazó jobb oszlop --> */}
             <div className="col-6">
-              <h2>Albumok</h2>
-              {user.albums &&
-                user.albums[0].map((album, index) => (
-                  <div key={index} className="card m-3">
-                    <div className="card-body">
-                      <h5 className="card-title">{album.title}</h5>
-                      <p className="card-text">{album.desciption}</p>
-                      <ul className="list-group">
-                        {album.poems.map((poem, index) => (
-                          <li key={index} className="list-group-item">
-                            <strong>{poem.title}</strong>
-                            <p>{poem.content}</p>
-                            <strong>{poem.author}</strong>
-                            <p>{poem.creationDate}</p>
-                            <strong>Likeok</strong>
-                            <ul>
-                              {poem.likes.map((like, index) => (
-                                <li key={index}>{like.username}</li>
+                  <h2>Albumok</h2>
+                  {user.albums && user.albums.length > 0 ? (
+                    <>
+                      {user.albums.map((album, index) => (
+                        <div key={index} className="card m-3">
+                          <div className="card-body">
+                            <h5 className="card-title">{album.title}</h5>
+                            <p className="card-text">{album.desciption}</p>
+                            <ul className="list-group">
+                              {album.poems.map((poem, index) => (
+                                <li key={index} className="list-group-item">
+                                  <strong>{poem.title}</strong>
+                                  <p>{poem.content}</p>
+                                  <strong>{poem.author}</strong>
+                                  <p>{poem.creationDate}</p>
+                                  <strong>Likeok</strong>
+                                  <ul>
+                                    {poem.likes.map((like, index) => (
+                                      <li key={index}>{like.username}</li>
+                                    ))}
+                                  </ul>
+                                  <div className="card">
+                                    <div className="card-body">
+                                      <h5 className="card-title">Kommentek</h5>
+                                      <ul className="list-group">
+                                        {poem.comments.map((comment, index) => (
+                                          <li key={index} className="list-group-item">
+                                            {comment.commenter}: {comment.commentText}{" "}
+                                            ({comment.dateCommented})
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </li>
                               ))}
                             </ul>
-                            <div className="card">
-                              <div className="card-body">
-                                <h5 className="card-title">Kommentek</h5>
-                                <ul className="list-group">
-                                  {poem.comments.map((comment, index) => (
-                                    <li key={index} className="list-group-item">
-                                      {comment.commenter}: {comment.commentText}{" "}
-                                      ({comment.dateCommented})
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                ))}
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      <p>Még nincs albumod</p>
+                    </>
+                  )}
             </div>
           </div>
         </div>
+
+        
       </div>
     )
   );

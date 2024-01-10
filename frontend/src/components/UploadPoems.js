@@ -8,6 +8,14 @@ const UploadPoems = () => {
   const [content, setContent] = useState('');
   const { user, setPoemUpload } = useContext(AppContext);
 
+  const handleTextareaChange = (e) => {
+    // Szűrjük az Enter gombot, és adjunk hozzá egy sortörést a tartalomhoz
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Ne engedje tovább az Enter eseményt
+      setContent((prevContent) => prevContent + '\n');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -72,6 +80,7 @@ const UploadPoems = () => {
             name="content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            onKeyDown={handleTextareaChange}
             className="form-control"
             required
           />

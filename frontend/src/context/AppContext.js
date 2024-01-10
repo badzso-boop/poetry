@@ -11,6 +11,7 @@ export const AppProvider = ({ children }) => {
   const [userId, setUserId] = useState(null);
   const [poemUpload, setPoemUpload] = useState(null)
   const [albumUpload, setAlbumUpload] = useState(null)
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchPoems = async () => {

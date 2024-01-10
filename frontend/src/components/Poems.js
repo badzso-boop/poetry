@@ -8,7 +8,18 @@ import { AppContext } from '../context/AppContext';
 const Poems = () => {
   const { poems } = useContext(AppContext);
 
-  
+  const renderContentWithLineBreaks = (poem) => {
+    if (!poem) return null;
+
+    const contentWithBreaks = poem.content.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        <br />
+      </React.Fragment>
+    ));
+
+    return contentWithBreaks;
+  };
 
   return (
     <>
@@ -22,7 +33,7 @@ const Poems = () => {
                   <Link to={`/poems/${index}`}>
                     <strong>{poem.title}</strong>
                   </Link>
-                  <p>{poem.content}</p>
+                  <p>{renderContentWithLineBreaks(poem)}</p>
                   <strong>{poem.author}</strong>
                   <p>{poem.creationDate}</p>
                   <span><strong>Likeok: </strong> {poem.likeDb} db</span>

@@ -12,16 +12,29 @@ router.post('/register', async (req, res) => {
   // Hasheljük a jelszót
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const role = "user"
+  const role = "user";
+
   try {
+    // Ellenőrizze, hogy van-e már ilyen felhasználó az adatbázisban
+    const existingUser = await pool.query('SELECT * FROM users WHERE username = ? OR email = ?', [username, email]);
+
+    if (existingUser[0].length > 0) {
+      if (existingUser[0][0].username === username) {
+        return res.status(400).json({ error: 'Bad Request', errorMessage: 'Username already exists.' });
+      } else if (existingUser[0][0].email === email) {
+        return res.status(400).json({ error: 'Bad Request', errorMessage: 'Email already exists.' });
+      }
+    }
+
     // Vegyük fel az új felhasználót az adatbázisba
     await pool.query('INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)', [username, email, hashedPassword, role]);
     res.status(201).json({ message: 'Registration successful.' });
   } catch (error) {
     console.error('Error registering user:', error.message);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error', errorMessage: error.message });
   }
 });
+
 
 // Bejelentkezés
 router.post('/login', async (req, res) => {

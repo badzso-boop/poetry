@@ -51,6 +51,9 @@ router.get('/:userId', async (req, res) => {
         return albumWithPoems
       }))
     }
+    else {
+      albumsWithPoems = []
+    }
 
     if (userRows.length === 1) {
       const user = new User(userRows[0].user_id, userRows[0].username, userRows[0].email, userRows[0].password_hash, userRows[0].profile_image_url, userRows[0].role, poems, albumsWithPoems)

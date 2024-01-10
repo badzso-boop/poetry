@@ -2,11 +2,17 @@
 
 import React, { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
+import { useNavigate } from 'react-router-dom';
+
+import BadgeAlert from './BadgeAlert';
 
 const Login = () => {
   const { setUser, setUserId } = useContext(AppContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loginSuccess, setLoginSuccess] = useState(null);
+  const [loginText, setLoginText] = useState("")
+  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,9 +39,15 @@ const Login = () => {
         setUser({ username: username });
         setUserId(userId)
         console.log('Successful login');
+        setLoginSuccess(true)
+        setLoginText("Sikeres bejelentkezés")
+
+        navigate('/poems');
       } else {
         // Sikertelen bejelentkezés, kezelheted a választ itt
         console.error('Login failed');
+        setLoginSuccess(false)
+        setLoginText("Sikertelen bejelentkezés")
       }
     } catch (error) {
       console.error('Error during login:', error.message);
@@ -74,6 +86,13 @@ const Login = () => {
           Login
         </button>
       </form>
+
+      {loginSuccess !== null && (
+        <BadgeAlert
+          success={loginSuccess}
+          text={loginText}
+        />
+      )}
     </div>
   );
 };
