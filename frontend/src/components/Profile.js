@@ -5,12 +5,11 @@ import axios from "axios";
 import { AppContext } from '../context/AppContext';
 
 const Profile = () => {
-  const [users, setUsers] = useState([]);
   const [poemId, setPoemId] = useState("");
   const [commentId, setCommentId] = useState("");
   const [editingStateComment, setEditingStateComment] = useState({});
-  const [error, setError] = useState(null);
   const [editingState, setEditingState] = useState({});
+  const [albumDelete, setAlbumDelete] = useState(-1)
 
   const { user, userId, setUser } = useContext(AppContext);
 
@@ -198,6 +197,23 @@ const Profile = () => {
     }
   };
 
+  const handleAlbumDelete = (albumId) => {
+    axios.delete(`http://localhost:3000/albums/delete-album/${albumId}`,{ withCredentials: true, })
+    .then((response) => {
+      if (response.status === 200) {
+        // A törlés sikeres
+        setAlbumDelete(albumId);
+      } else {
+        // A törlés sikertelen
+        console.log('A törlés sikertelen!');
+      }
+    })
+    .catch((error) => {
+      // Hiba történt
+      console.log(error);
+    });
+  }
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -206,7 +222,6 @@ const Profile = () => {
 
         // Ha nincs bejelentkezve a felhasználó, ne küldjük el a kérést
         if (!user || !user.username) {
-          setError("Not logged in");
           return;
         }
 
@@ -217,12 +232,11 @@ const Profile = () => {
         setUser(response.data);
       } catch (error) {
         console.error("Error fetching poems:", error.message);
-        setError("Error fetching poems");
       }
     };
 
     fetchUser();
-  }, [poemId, editingState, commentId, editingStateComment]);
+  }, [poemId, editingState, commentId, editingStateComment, albumDelete]);
 
   return (
     user && (
@@ -394,13 +408,14 @@ const Profile = () => {
                   <h2>Albumok</h2>
                   {user.albums && user.albums.length > 0 ? (
                     <>
-                      {user.albums.map((album, index) => (
-                        <div key={index} className="card m-3">
-                          <div className="card-body">
-                            <h5 className="card-title">{album.title}</h5>
-                            <p className="card-text">{album.desciption}</p>
+                      <div className="card m-3">
+                        {user.albums[0].map((smallAlbum, smallindex) => (
+                          <div className="card-body" key={smallindex}>
+                            <h5 className="card-title">{smallAlbum.title}</h5>
+                            <p className="card-text">{smallAlbum.desciption}</p>
+                            <button onClick={() => handleAlbumDelete(smallAlbum.album_id)}>Album törlése</button>
                             <ul className="list-group">
-                              {album.poems.map((poem, index) => (
+                              {smallAlbum.poems && smallAlbum.poems.map((poem, index) => (
                                 <li key={index} className="list-group-item">
                                   <strong>{poem.title}</strong>
                                   <p>{poem.content}</p>
@@ -429,8 +444,8 @@ const Profile = () => {
                               ))}
                             </ul>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </>
                   ) : (
                     <>

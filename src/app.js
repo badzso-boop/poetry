@@ -17,12 +17,14 @@ app.use(express.json());
 
 
 const corsOptions = {
-    origin: 'http://localhost:3001', // Engedélyezett eredet
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true, // Engedélyezd a cookie-k elküldését
-  };
-  
-  app.use(cors(corsOptions));
+  origin: ['http://localhost:3001', 'http://localhost:50410'], // Engedélyezett eredet
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // Engedélyezd a cookie-k elküldését
+};
+
+app.use(cors(corsOptions));
+
+
 
 // Session middleware
 app.use(session({

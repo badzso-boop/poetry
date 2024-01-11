@@ -6,12 +6,12 @@ export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
   const [poems, setPoems] = useState([]);
-  const [albums, setAlbums] = useState([]);
+  const [albums, setAlbums] = useState({});
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
   const [poemUpload, setPoemUpload] = useState(null)
   const [albumUpload, setAlbumUpload] = useState(null)
-  const [error, setError] = useState(null);
+  const [commentUpload, setCommentUpload] = useState(null)
 
   useEffect(() => {
     const fetchPoems = async () => {
@@ -35,10 +35,10 @@ export const AppProvider = ({ children }) => {
     fetchPoems();
     fetchAlbums();
 
-  }, [poemUpload, albumUpload]);
+  }, [poemUpload, albumUpload, commentUpload]);
 
   return (
-    <AppContext.Provider value={{ albums, poems, setPoems, user, setUser, userId, setUserId, setAlbumUpload, setPoemUpload }}>
+    <AppContext.Provider value={{ albums, poems, setPoems, user, setUser, userId, setUserId, setAlbumUpload, setPoemUpload,setCommentUpload }}>
       {children}
     </AppContext.Provider>
   );

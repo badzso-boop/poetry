@@ -4,7 +4,7 @@ import React, { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 
 const Logout = () => {
-  const { setUser } = useContext(AppContext);
+  const { setUser, setUserId } = useContext(AppContext);
 
   const handleLogout = async () => {
     try {
@@ -17,6 +17,7 @@ const Logout = () => {
         // Sikeres kijelentkezés, null értéket állítunk be a felhasználói információknál
         setUser(null);
         console.log('Logout successful');
+        setUserId(null)
       } else {
         // Sikertelen kijelentkezés, kezelheted a választ itt
         console.error('Logout failed');

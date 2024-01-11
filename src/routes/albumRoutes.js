@@ -10,6 +10,7 @@ const Functions = require('../helpers/functions');
 
 // Egy middleware, ami ellenőrzi, hogy a felhasználó be van-e jelentkezve
 const checkAuth = (req, res, next) => {
+  console.log(req.session)
     if (req.session && req.session.userId) {
       return next();
     } else {
@@ -87,7 +88,7 @@ router.delete('/delete-album/:albumId', checkAuth, async (req, res) => {
         const [userRows] = await pool.query('SELECT * FROM users WHERE user_id = ?', [userId]);
 
         if (userRows.length !== 1) {
-        return res.status(404).json({ error: 'User not found.' });
+          return res.status(404).json({ error: 'User not found.' });
         }
 
         // Ellenőrizzük, hogy a felhasználó a tulajdonosa-e az albumnak

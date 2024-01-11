@@ -1,62 +1,83 @@
-// src/components/Navbar.js
-
-import React, { useContext } from 'react';
+import React, { useContext, useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import { AppContext } from '../context/AppContext';
 
-const Navbar = () => {
+const AppNavbar = () => {
   const { user, userId } = useContext(AppContext);
+  const [expanded, setExpanded] = useState(false);
+  const navbarRef = useRef(null);
+
+  const handleNavbarToggle = () => {
+    setExpanded(!expanded);
+  };
+
+  const handleNavItemClick = () => {
+    setExpanded(false);
+  };
+
+  const handleOutsideClick = (event) => {
+    if (navbarRef.current && !navbarRef.current.contains(event.target)) {
+      setExpanded(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handleOutsideClick);
+
+    return () => {
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, []);
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div className="container">
-        <Link to="/" className="navbar-brand">My App</Link>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ml-auto">
-            <li className="nav-item">
-              {user ? (
-                <span className="navbar-text">
-                  Welcome, {user.username}! {/* Itt jelenítjük meg a bejelentkezett felhasználó nevét */}
-                </span>
-              ) : (
-                <Link to="/login" className="nav-link">Login</Link>
-              )}
-            </li>
-            <li className="nav-item">
-              <Link to="/register" className="nav-link">Register</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/logout" className="nav-link">Logout</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/poems" className="nav-link">Poems</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/albums" className="nav-link">Albums</Link>
-            </li>
-            { userId ? <li className="nav-item">
-              <Link to="/profile" className="nav-link">Profile</Link>
-            </li> : <span></span>}
-            {/* <li className="nav-item">
-              <Link to="/profile" className="nav-link">Profile</Link>
-            </li> */}
-            {user ? (
-                <>
-                  <li className="nav-item">
-                    <Link to="/uploadpoem" className="nav-link">Upload Poem</Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link to="/uploadalbum" className="nav-link">Upload Album</Link>
-                  </li>
-                </>
-              ) : (
-                <></>
-              )}
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <Navbar
+      bg="dark"
+      variant="dark"
+      expand="lg"
+      className='p-3'
+      expanded={expanded}
+      onToggle={handleNavbarToggle}
+      ref={navbarRef}
+    >
+      <Navbar.Brand as={Link} to="/" onClick={handleNavItemClick}>My App</Navbar.Brand>
+      <Navbar.Toggle aria-controls="navbarNav" />
+      <Navbar.Collapse id="navbarNav">
+        <Nav className="ml-auto">
+          <Nav.Link as={Link} to="/poems" onClick={handleNavItemClick}>
+            Poems
+          </Nav.Link>
+          <Nav.Link as={Link} to="/albums" onClick={handleNavItemClick}>
+            Albums
+          </Nav.Link>
+
+          {userId ? (
+            <>
+              <Nav.Link as={Link} to="/profile" onClick={handleNavItemClick}>View Profile</Nav.Link>
+              <Nav.Link as={Link} to="/uploadpoem" onClick={handleNavItemClick}>Upload Poem</Nav.Link>
+              <Nav.Link as={Link} to="/uploadalbum" onClick={handleNavItemClick}>Upload Album</Nav.Link>
+              <Nav.Link as={Link} to="/logout" onClick={handleNavItemClick}>Logout</Nav.Link>
+            </>
+          ) : (
+            <>
+              <Nav.Link as={Link} to="/login" onClick={handleNavItemClick}>
+                Login
+              </Nav.Link>
+              <Nav.Link as={Link} to="/register" onClick={handleNavItemClick}>
+                Register
+              </Nav.Link>
+            </>
+          )}
+
+          {user && (
+            <span className="navbar-text">
+              Welcome, {user.username}!
+            </span>
+          )}
+        </Nav>
+      </Navbar.Collapse>
+    </Navbar>
   );
 };
 
-export default Navbar;
+export default AppNavbar;

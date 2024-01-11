@@ -8,25 +8,56 @@ const Poem = (() => {
     
     const album = albums[albumId]
 
+    const renderContentWithLineBreaks = (poem) => {
+        if (!poem) return null;
+    
+        const contentWithBreaks = poem.content.split('\n').map((line, index) => (
+          <React.Fragment key={index}>
+            {line}
+            <br />
+          </React.Fragment>
+        ));
+    
+        return contentWithBreaks;
+      };
+
     return (
         <>
         {albums && albums.length > 0 ? 
         (
             <>
-                <ul>
+                <ul className="list-unstyled">
                     <li>
-                        <strong>{album.title}</strong>
-                        <p>{album.description}</p>
-                        <ul>
+                        <div className="card m-4">
+                            <div className="card-header">
+                                <strong>{album.title}</strong>
+                            </div>
+                            <div className="card-body">
+                            <p className="card-text">{album.description}</p>
+                            </div>
+                            <ul className="list-unstyled">
                             {album.poems.map((poem, index) => (
-                                <li key={index}>
+                                <li key={index} className="m-3">
+                                <div className="card">
+                                    <div className="card-header">
                                     <strong>{poem.title}</strong>
-                                    <p>{poem.content}</p>
-                                    <strong>{poem.author}</strong>
-                                    <p>{poem.creationDate}</p>
+                                    </div>
+                                    <div className="card-body">
+                                    <blockquote>
+                                        <p>{renderContentWithLineBreaks(poem)}</p>
+                                        <footer className="blockquote-footer">
+                                        <cite>
+                                            <strong>{poem.author}</strong>
+                                            <p>{poem.creationDate.split("T")[0]}</p>
+                                        </cite>
+                                        </footer>
+                                    </blockquote>
+                                    </div>
+                                </div>
                                 </li>
                             ))}
-                        </ul>
+                            </ul>
+                        </div>
                     </li>
                 </ul>
             </>

@@ -44,7 +44,7 @@ router.get('/:userId', async (req, res) => {
 
     let albumsWithPoems = {}
 
-    if (albumRows.length > 1) {
+    if (albumRows.length > 0) {
       albumsWithPoems = await Promise.all(albumRows.map(async (album) => {
         const albumWithPoems = await Functions.getAlbumsByUser(album.user_id)
 

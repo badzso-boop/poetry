@@ -20,15 +20,15 @@ router.post('/register', async (req, res) => {
 
     if (existingUser[0].length > 0) {
       if (existingUser[0][0].username === username) {
-        return res.status(400).json({ error: 'Bad Request', errorMessage: 'Username already exists.' });
+        return res.status(400).json({ error: 'Bad Request', errorMessage: 'A felhasználónév foglalt, kérlek válassz másikat.' });
       } else if (existingUser[0][0].email === email) {
-        return res.status(400).json({ error: 'Bad Request', errorMessage: 'Email already exists.' });
+        return res.status(400).json({ error: 'Bad Request', errorMessage: 'Az email cím foglalt, kérlek válassz másikat.' });
       }
     }
 
     // Vegyük fel az új felhasználót az adatbázisba
     await pool.query('INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)', [username, email, hashedPassword, role]);
-    res.status(201).json({ message: 'Registration successful.' });
+    res.status(201).json({ message: 'Sikeres regisztráció.' });
   } catch (error) {
     console.error('Error registering user:', error.message);
     res.status(500).json({ error: 'Internal Server Error', errorMessage: error.message });
@@ -59,10 +59,10 @@ router.post('/login', async (req, res) => {
 
         res.json({ message: 'Login successful.', userId: user.user_id });
       } else {
-        res.status(401).json({ error: 'Invalid password.' });
+        res.status(401).json({ error: 'A jelszó helytelen.' });
       }
     } else {
-      res.status(404).json({ error: 'User not found.' });
+      res.status(404).json({ error: 'Nincs ilyen felhasználó.' });
     }
   } catch (error) {
     console.error('Error logging in:', error.message);
