@@ -24,7 +24,7 @@ const Albums = () => {
     <>
       {albums && albums.length > 0 ? (
         <div>
-        <h2 className="text-center">Albums</h2>
+        <h2 className="text-center">Albumok</h2>
         <ul className="list-unstyled">
           {albums.map((album, index) => (
             <li key={index}>

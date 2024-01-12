@@ -25,13 +25,11 @@ const UploadAlbum = () => {
           return;
         }
 
-        console.log(userid)
-
         const response = await axios.get(`http://localhost:3000/poems/user/${userid}`, { withCredentials: true });
         setPoems(response.data);
       } catch (error) {
         console.error('Error fetching poems:', error.message);
-        setError('Error fetching poems');
+        setError('Nincsenek még feltöltve verseid!');
       }
     };
 
@@ -118,7 +116,7 @@ const UploadAlbum = () => {
             <p>Poems</p>
             {error && <p>{error}</p>}
             <ul>
-                {poems.map((poem) => (
+                {poems.length > 0 && poems.map((poem) => (
                     <li key={poem.poem_id}>
                         <label>
                         <input

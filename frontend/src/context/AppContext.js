@@ -21,7 +21,7 @@ export const AppProvider = ({ children }) => {
       } catch (error) {
         console.error('Error fetching poems:', error.message);
       }
-    };    
+    };
 
     const fetchAlbums = async () => {
       try {

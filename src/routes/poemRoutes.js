@@ -8,6 +8,7 @@ const Like = require('../models/like')
 
 // Egy middleware, ami ellenőrzi, hogy a felhasználó be van-e jelentkezve
 const checkAuth = (req, res, next) => {
+  console.log(req.session)
   if (req.session && req.session.userId) {
     return next();
   } else {
@@ -232,11 +233,12 @@ router.post('/like/:poemId', checkAuth, async (req, res) => {
       await pool.query('INSERT INTO likes (user_id, poem_id) VALUES (?, ?)', [userId, poemId]);
       res.json({ message: 'Poem liked successfully.' });
     } else {
-      // Ha már likeolta, akkor hibaüzenetet küld
-      res.status(400).json({ error: 'You have already liked this poem.' });
+      // Ha már likeolta, akkor törölje a like-ot
+      await pool.query('DELETE FROM likes WHERE user_id = ? AND poem_id = ?', [userId, poemId]);
+      res.json({ message: 'Poem like removed successfully.' });
     }
   } catch (error) {
-    console.error('Error liking poem:', error.message);
+    console.error('Error handling poem like:', error.message);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });

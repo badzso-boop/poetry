@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import axios from 'axios';
@@ -9,6 +9,7 @@ const Poem = (() => {
     const [showcomment, setShowComment] = useState(false);
     const [selectedPoemIndex, setSelectedPoemIndex] = useState(null); // Új állapot
     const [commentText, setCommentText] = useState('');
+    const [commented, setCommented] = useState(0)
 
     const poem = poems[poemId]
 
@@ -53,6 +54,7 @@ const Poem = (() => {
         console.log('Sikeres POST kérés:', response.data);
         setCommentUpload(poemId)
         setCommentText('')
+        setCommented(Math.floor(Math.random() * (100 - 1 + 1)) + 1)
   
         // Esetleges további műveletek a sikeres kérés esetén
       } catch (error) {
@@ -75,12 +77,16 @@ const Poem = (() => {
       return contentWithBreaks;
     };
 
+    useEffect(() => {
+    }, [commented]);
+
+    
+
     return (
       <>
         {poem && poems.length > 0 ? (
             <>
               <div>
-                <h1 className="text-center">Poems</h1>
                 <ul className="list-unstyled">
                     <li>
                       <div className="card m-4">
@@ -135,7 +141,7 @@ const Poem = (() => {
                                       <div className="card-text">
                                         <form onSubmit={(e) => {e.preventDefault();handleSubmit(poem.id);}} className="mt-4">
                                           <div className="form-group mb-4">
-                                            <label htmlFor="commentText">Comment:</label>
+                                            <label htmlFor="commentText">Komment:</label>
                                             <textarea
                                               className="form-control"
                                               id="commentText"
@@ -144,7 +150,7 @@ const Poem = (() => {
                                               onChange={(e) => setCommentText(e.target.value)}
                                             />
                                           </div>
-                                          <button type="submit" className="btn btn-primary">Submit</button>
+                                          <button type="submit" className="btn btn-primary">Küldés</button>
                                         </form>
                                       </div>
                                     </div>

@@ -214,6 +214,23 @@ const Profile = () => {
     });
   }
 
+  const renderContentWithLineBreaks = (poem) => {
+    if (!poem) return null;
+
+    const contentWithBreaks = poem.content.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        <br />
+      </React.Fragment>
+    ));
+
+    return contentWithBreaks;
+  };
+
+  const handleBack = () => {
+    setEditingState(false)
+  }
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -245,8 +262,10 @@ const Profile = () => {
 
         <div className="col-12 mb-4">
           <div className="card">
+            <div className="card-header">
+              <strong>{user.username}</strong>
+            </div> 
             <div className="card-body">
-              <h4 className="card-title">{user.username}</h4>
               <p className="card-text">E-mail cím: {user.email}</p>
               <p className="card-text">Profil kép: {user.profileImgUrl}</p>
               <p className="card-text">Rang: {user.role}</p>
@@ -260,133 +279,175 @@ const Profile = () => {
         <div className="container">
           <div className="row">
             {/* <!-- Verseket tartalmazó bal oszlop --> */}
-            <div className="col-6">
-              <h2>Összes Vers</h2>
-              <ul className="list-group">
+            <div className="col-md-6">
+              <h2 className="text-center">Összes Vers</h2>
+              <ul className="list-unstyled">
                 {user.poems && user.poems.length > 0 ? (
                   <>
                     {user.poems.map((poem, index) => (
                       <li
                         key={index}
-                        className="list-group-item"
                         data-poemid={poem.id}
+                        className="mb-4"
                       >
-                        <strong>{poem.title}</strong>
-                        <p>{poem.content}</p>
-                        <strong>{poem.author}</strong>
-                        <p>{poem.creationDate}</p>
-
-                        <form onSubmit={handleDelete}>
-                          <label>
-                            <input
-                              type="text"
-                              name="poemId"
-                              value={poem.id}
-                              style={{ display: "none" }}
-                              readOnly
-                            />
-                          </label>
-                          <button type="submit">Vers törlése</button>
-                        </form>
-
-                        {editingState[poem.id]?.editing ? (
-                          // Szerkesztő űrlap
-                          <form onSubmit={(e) => handleEditSubmit(poem.id, e)}>
-                            <label>
-                              Title:
-                              <input
-                                type="text"
-                                name="title"
-                                value={
-                                  editingState[poem.id]?.editedPoem.title || ""
-                                }
-                                onChange={handleInputChange}
-                              />
-                            </label>
-                            <label>
-                              Content:
-                              <input
-                                type="text"
-                                name="content"
-                                value={
-                                  editingState[poem.id]?.editedPoem.content || ""
-                                }
-                                onChange={handleInputChange}
-                              />
-                            </label>
-                            <button type="submit">Vers Szerkesztése</button>
-                          </form>
-                        ) : (
-                          // Szerkesztő gomb
-                          <button onClick={() => handleEditClick(poem.id, poem)}>
-                            Vers szerkesztése
-                          </button>
-                        )}
-
-                        <br />
-                        <strong>Likeok</strong>
-                        <ul>
-                          {poem.likes.map((like, index) => (
-                            <li key={index}>{like.username}</li>
-                          ))}
-                        </ul>
                         <div className="card">
+                          <div className="card-header">
+                            <strong>{poem.title}</strong>
+                          </div>
                           <div className="card-body">
-                            <h5 className="card-title">Kommentek</h5>
-                            <ul className="list-group">
+                            <blockquote>
+                              <p>{renderContentWithLineBreaks(poem)}</p>
+                              <footer className="blockquote-footer">
+                                <cite>
+                                  <strong>{poem.author}</strong>
+                                  <p>{poem.creationDate.split("T")[0]}</p>
+                                </cite>
+                              </footer>
+                            </blockquote>
+
+                            <div className="row">
+                              {editingState[poem.id]?.editing ? (
+                                <>
+                                  <form onSubmit={(e) => handleEditSubmit(poem.id, e)}>
+                                    <div className="form-group">
+                                      <label htmlFor="title">Title:</label>
+                                      <input
+                                        type="text"
+                                        className="form-control"
+                                        id="title"
+                                        name="title"
+                                        value={editingState[poem.id]?.editedPoem.title || ""}
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
+                                    <div className="form-group">
+                                      <label htmlFor="content">Content:</label>
+                                      <textarea
+                                        className="form-control"
+                                        id="content"
+                                        name="content"
+                                        value={editingState[poem.id]?.editedPoem.content || ""}
+                                        onChange={handleInputChange}
+                                        style={{ height: "450px" }}
+                                      />
+                                    </div>
+                                    <button type="submit" className="btn btn-primary mt-2 w-100">Szerkesztés</button>
+                                    <button className="btn btn-primary mt-2 w-100" onClick={handleBack}>
+                                    Vissza
+                                  </button>
+                                  </form>
+                                </>
+                                ) : (
+                                  <div className="row">
+                                    <div className="col-6 d-flex align-items-center justify-content-center">
+                                      <form onSubmit={handleDelete}>
+                                        <label>
+                                          <input
+                                            type="text"
+                                            name="poemId"
+                                            value={poem.id}
+                                            style={{ display: "none" }}
+                                            readOnly
+                                          />
+                                        </label>
+                                        <button type="submit" className="btn btn-primary">
+                                          Törlés
+                                        </button>
+                                      </form>
+                                    </div>
+                                    <div className="col-6 d-flex align-items-center justify-content-center">
+                                      <button className="btn btn-primary" onClick={() => handleEditClick(poem.id, poem)}>
+                                        Szerkesztés
+                                      </button>
+                                    </div>
+                                  </div>
+                              )}
+                            </div>
+
+                            <br />
+                            <span><strong>Likeok: </strong> {poem.likes.length} db</span>
+                            {/* <ul>
+                              {poem.likes.map((like, index) => (
+                                <li key={index}>{like.username}</li>
+                              ))}
+                            </ul> */}
+
+                            <h5>Kommentek: </h5>
+                            <ul className="list-group list-group-flush mb-4">
                               {poem.comments && poem.comments.map((comment, index) => (
                                 <li
                                   key={index}
                                   className="list-group-item"
                                   data-commentid={comment.id}
                                 >
-                                  {comment.commenter}: {comment.commentText} (
-                                  {comment.dateCommented})
-                                  {editingStateComment[comment.id]?.editing ? (
-                                    <div>
-                                      <form
-                                        onSubmit={(e) =>
-                                          handleEditSubmitComment(comment.id, e)
-                                        }
-                                      >
-                                        <label>
-                                          Comment text:
-                                          <input
-                                            type="text"
-                                            name="commentText"
-                                            value={
-                                              editingStateComment[comment.id]
-                                                ?.editedComment.commentText || ""
-                                            }
-                                            onChange={handleInputChangeComment}
-                                          />
-                                        </label>
-                                        <button type="submit">
-                                          Komment mentése
-                                        </button>
-                                      </form>
+                                  <div className="card">
+                                    <div className="card-header d-flex justify-content-between">
+                                      <p className="text-left mb-0">{comment.commenter}</p>
+                                      <p className="text-right mb-0">{comment.dateCommented.split("T")[0]}</p>
                                     </div>
-                                  ) : (
-                                    <div>
-                                      <button
-                                        onClick={() =>
-                                          handleEditClickComment(
-                                            comment.id,
-                                            comment
-                                          )
-                                        }
-                                      >
-                                        Komment szerkesztése
-                                      </button>
+                                    <div className="card-body">
+                                      <p className="card-text">
+                                        {comment.commentText}
+                                      </p>
+
+                                      <div className="row">
+                                        
+                                          {(user.role === "admin" || user.username === comment.commenter) ? (
+                                            <>
+                                              <div className="col">
+                                                {editingStateComment[comment.id]?.editing ? (
+                                                <div>
+                                                  <form onSubmit={(e) => handleEditSubmitComment(comment.id, e)}>
+                                                    <div className="form-group">
+                                                      <label htmlFor="commentText">Comment text:</label>
+                                                      <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        id="commentText"
+                                                        name="commentText"
+                                                        value={editingStateComment[comment.id]?.editedComment.commentText || ""}
+                                                        onChange={handleInputChangeComment}
+                                                      />
+                                                    </div>
+                                                    <button type="submit" className="btn btn-primary">Komment mentése</button>
+                                                  </form>
+                                                </div>
+                                              ) : (
+                                                <div>
+                                                  <button
+                                                    className="btn btn-primary m-1"
+                                                    onClick={() =>
+                                                      handleEditClickComment(
+                                                        comment.id,
+                                                        comment
+                                                      )
+                                                    }
+                                                  >
+                                                    Szerkesztés
+                                                  </button>
+                                                </div>
+                                              )}
+                                              </div>
+                                              <div className="col">
+                                                <button
+                                                  className="btn btn-primary m-1"
+                                                  onClick={() =>
+                                                    handleDeleteClickComment(comment.id)
+                                                  }
+                                                >
+                                                  Törlés
+                                                </button>
+                                              </div>
+                                            </>
+                                          ) : (
+                                            <>
+                                            </>
+                                          )}
+                                      </div>
+                                      
+
                                     </div>
-                                  )}
-                                  <button
-                                    onClick={() =>
-                                      handleDeleteClickComment(comment.id)
-                                    }
-                                  >
-                                    Komment törlése
-                                  </button>
+                                  </div>
                                 </li>
                               ))}
                             </ul>
@@ -404,48 +465,73 @@ const Profile = () => {
             </div>
 
             {/* <!-- Albumokat tartalmazó jobb oszlop --> */}
-            <div className="col-6">
-                  <h2>Albumok</h2>
+            <div className="col-md-6">
+                  <h2 className="text-center">Albumok</h2>
                   {user.albums && user.albums.length > 0 ? (
                     <>
-                      <div className="card m-3">
+                      <ul className="list-unstyled">
                         {user.albums[0].map((smallAlbum, smallindex) => (
-                          <div className="card-body" key={smallindex}>
-                            <h5 className="card-title">{smallAlbum.title}</h5>
-                            <p className="card-text">{smallAlbum.desciption}</p>
-                            <button onClick={() => handleAlbumDelete(smallAlbum.album_id)}>Album törlése</button>
-                            <ul className="list-group">
-                              {smallAlbum.poems && smallAlbum.poems.map((poem, index) => (
-                                <li key={index} className="list-group-item">
-                                  <strong>{poem.title}</strong>
-                                  <p>{poem.content}</p>
-                                  <strong>{poem.author}</strong>
-                                  <p>{poem.creationDate}</p>
-                                  <strong>Likeok</strong>
-                                  <ul>
-                                    {poem.likes.map((like, index) => (
-                                      <li key={index}>{like.username}</li>
-                                    ))}
-                                  </ul>
-                                  <div className="card">
-                                    <div className="card-body">
-                                      <h5 className="card-title">Kommentek</h5>
-                                      <ul className="list-group">
-                                        {poem.comments.map((comment, index) => (
-                                          <li key={index} className="list-group-item">
-                                            {comment.commenter}: {comment.commentText}{" "}
-                                            ({comment.dateCommented})
-                                          </li>
-                                        ))}
-                                      </ul>
+                          <li key={smallindex}>
+                            <div className="card">
+                              <div className="card-header">
+                                <strong>{smallAlbum.title}</strong>
+                              </div>
+                              <div className="card-body">
+                                <p className="card-text">
+                                  {smallAlbum.description}
+                                </p>
+                                <button onClick={() => handleAlbumDelete(smallAlbum.album_id)} className="btn btn-primary">Törlés</button>
+                              </div>
+
+                              <ul className="list-unstyled m-2">
+                                {smallAlbum.poems && smallAlbum.poems.map((poem, index) => (
+                                  <li key={index} className="m-2">
+                                    <div className="card">
+                                      <div className="card-header">
+                                        <strong>{poem.title}</strong>
+                                      </div>
+                                      <div className="card-body">
+                                        <blockquote>
+                                          <p>{renderContentWithLineBreaks(poem)}</p>
+                                          <footer className="blockquote-footer">
+                                            <cite>
+                                              <strong>{poem.author}</strong>
+                                              <p>{poem.creationDate.split("T")[0]}</p>
+                                            </cite>
+                                          </footer>
+                                        </blockquote>
+
+                                        <span><strong>Likeok: </strong> {poem.likes.length} db</span>
+                                        {/* <ul>
+                                          {poem.likes.map((like, index) => (
+                                            <li key={index}>{like.username}</li>
+                                          ))}
+                                        </ul> */}
+
+                                        {/* <ul className="list-unstyled">
+                                          {poem.comments.map((comment, index) => (
+                                            <li key={index} className="list-group-item">
+                                              <div className="card">
+                                                <div className="card-header d-flex justify-content-between">
+                                                  <p className="text-left mb-0">{comment.commenter}</p>
+                                                  <p className="text-right mb-0">{comment.dateCommented.split("T")[0]}</p>
+                                                </div>
+                                                <div className="card-body">
+                                                  <p className="text-left mb-0">{comment.commentText}</p>
+                                                </div>
+                                              </div>
+                                            </li>
+                                          ))}
+                                        </ul> */}
+                                      </div>
                                     </div>
-                                  </div>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </li>
                         ))}
-                      </div>
+                      </ul>
                     </>
                   ) : (
                     <>

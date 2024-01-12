@@ -1,19 +1,72 @@
-// src/components/Poems.js
-
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 import { AppContext } from '../context/AppContext';
 
 const Poems = () => {
-  const { poems } = useContext(AppContext);
+  const { poems, userId, setPoems } = useContext(AppContext);
   const [showcomment, setShowComment] = useState(false);
-  const [selectedPoemIndex, setSelectedPoemIndex] = useState(null); // Új állapot
+  const [selectedPoemIndex, setSelectedPoemIndex] = useState(null);
+  const [likeCount, setLikeCount] = useState({});
 
   const handleToggleComments = (index) => {
     setShowComment(!showcomment);
     setSelectedPoemIndex(index);
   };
+
+  const handleLike = async (poemId) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/poems/like/${poemId}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+  
+      const message = response.data.message;
+  
+      if (message === 'Poem liked successfully.') {
+        // Ha a vers sikeresen lájkolva lett, növeljük a like-ok számát
+        setLikeCount(prevLikes => ({
+          ...prevLikes,
+          [poemId]: (prevLikes[poemId] || 0) + 1
+        }));
+        // Frissítjük a verslistát
+        setPoems(prevPoems => 
+          prevPoems.map(poem => 
+            poem.id === poemId ? { ...poem, likeDb: poem.likeDb + 1 } : poem
+          )
+        );
+      } else if (message === 'Poem like removed successfully.') {
+        // Ha a like sikeresen eltávolítva lett, csökkentjük a like-ok számát
+        setLikeCount(prevLikes => ({
+          ...prevLikes,
+          [poemId]: Math.max((prevLikes[poemId] || 0) - 1, 0)
+        }));
+        // Frissítjük a verslistát
+        setPoems(prevPoems => 
+          prevPoems.map(poem => 
+            poem.id === poemId ? { ...poem, likeDb: Math.max(poem.likeDb - 1, 0) } : poem
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Hiba történt a like kérés közben", error);
+    }
+  };
+
+  useEffect(() => {
+    // Betöltésnél inicializáljuk a like számokat
+    if (poems.length > 0) {
+      const initialLikes = poems.reduce((acc, poem) => {
+        acc[poem.id] = poem.likeDb;
+        return acc;
+      }, {});
+      setLikeCount(initialLikes);
+    }
+  }, [poems]);
 
   const renderContentWithLineBreaks = (poem) => {
     if (!poem) return null;
@@ -28,14 +81,12 @@ const Poems = () => {
     return contentWithBreaks;
   };
 
-  
-
   return (
     <>
       {poems && poems.length > 0 ? (
         <>
           <div>
-            <h1 className="text-center">Poems</h1>
+            <h1 className="text-center">Versek</h1>
             <ul className="list-unstyled">
               {poems.map((poem, index) => (
                 <li key={index}>
@@ -102,19 +153,13 @@ const Poems = () => {
                         </>
                       )}
 
-
-                      <span><strong>Likeok: </strong> {poem.likeDb} db</span>
-                      {/* <ul>
-                        {poem.likes.map((like, index) => (
-                          <li key={index}>{like.username}</li>
-                        ))}
-                      </ul> */}
+                      <span><strong>Likeok: </strong> {likeCount[poem.id] || 0} db</span>
+                      {userId && (<p>nem vagy belepve</p>)}
+                      <button className='btn btn-primary m-2 btn-sm' onClick={() => handleLike(poem.id)}>
+                        Kedvelés
+                      </button>
                     </div>
                   </div>
-                  
-                  
-                  
-                  
                 </li>
               ))}
             </ul>
@@ -122,7 +167,7 @@ const Poems = () => {
         </>
       ) : (
         <>
-          <p>A versek meg nem toltottek be</p>
+          <p>A versek még nem töltöttek be</p>
         </>
       )}
     </>
