@@ -2,9 +2,6 @@
 const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
-const compression = require("compression");
-const helmet = require("helmet");
-const RateLimit = require("express-rate-limit");
 
 const userRoutes = require('./routes/userRoutes');
 const poemRoutes = require('./routes/poemRoutes');
@@ -18,23 +15,6 @@ const port = 3000;
 
 // Middleware for parsing JSON
 app.use(express.json());
-app.use(compression());
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      "script-src": ["'self'", "code.jquery.com", "cdn.jsdelivr.net"],
-    },
-  }),
-);
-
-
-
-const limiter = RateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
-  max: 20,
-});
-// Apply rate limiter to all requests
-app.use(limiter);
 
 const corsOptions = {
   origin: ['http://localhost:3001', 'http://localhost:50410'], // Engedélyezett eredet
