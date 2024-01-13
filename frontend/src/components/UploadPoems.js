@@ -59,10 +59,10 @@ const UploadPoems = () => {
 
   return (
     <div>
-      <h2>Upload Poem</h2>
+      <h2>Vers feltöltése</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="title">Title:</label>
+          <label htmlFor="title">Cím:</label>
           <input
             type="text"
             id="title"
@@ -74,7 +74,7 @@ const UploadPoems = () => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="content">Content:</label>
+          <label htmlFor="content">Vers:</label>
           <textarea
             id="content"
             name="content"
@@ -86,7 +86,7 @@ const UploadPoems = () => {
           />
         </div>
         <button type="submit" className="btn btn-primary">
-          Upload Poem
+          Mentés
         </button>
       </form>
     </div>

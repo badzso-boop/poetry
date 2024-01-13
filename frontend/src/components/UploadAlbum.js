@@ -87,10 +87,10 @@ const UploadAlbum = () => {
 
   return (
     <div>
-      <h2>Upload Album</h2>
+      <h2>Album feltöltése</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="title">Title:</label>
+          <label htmlFor="title">Cím:</label>
           <input
             type="text"
             id="title"
@@ -102,7 +102,7 @@ const UploadAlbum = () => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="content">Description:</label>
+          <label htmlFor="content">Leírás:</label>
           <textarea
             id="content"
             name="content"
@@ -113,7 +113,7 @@ const UploadAlbum = () => {
           />
         </div>
         <div>
-            <p>Poems</p>
+            <p>Versek</p>
             {error && <p>{error}</p>}
             <ul>
                 {poems.length > 0 && poems.map((poem) => (
@@ -131,7 +131,7 @@ const UploadAlbum = () => {
             </ul>
         </div>
         <button type="submit" className="btn btn-primary">
-          Upload Poem
+          Mentés
         </button>
       </form>
     </div>

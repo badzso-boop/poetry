@@ -111,7 +111,7 @@ const Poems = () => {
                       {poem.comments.length > 0 ? (
                         <>
                           <button
-                            className="btn btn-link"
+                            className="btn btn-primary btn-sm ms-2"
                             onClick={() => handleToggleComments(index)}
                           >
                             {selectedPoemIndex === index && showcomment
@@ -154,10 +154,7 @@ const Poems = () => {
                       )}
 
                       <span><strong>Likeok: </strong> {likeCount[poem.id] || 0} db</span>
-                      {userId && (<p>nem vagy belepve</p>)}
-                      <button className='btn btn-primary m-2 btn-sm' onClick={() => handleLike(poem.id)}>
-                        Kedvelés
-                      </button>
+                      {userId && (<button className='btn btn-primary m-2 btn-sm' onClick={() => handleLike(poem.id)}>Kedvelés</button>)}
                     </div>
                   </div>
                 </li>

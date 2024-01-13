@@ -1,4 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import axios from 'axios';
@@ -87,6 +89,9 @@ const Poem = (() => {
         {poem && poems.length > 0 ? (
             <>
               <div>
+                <Nav.Link as={Link} to="/poems">
+                  <button class="btn btn-primary">Vissza</button>
+                </Nav.Link>
                 <ul className="list-unstyled">
                     <li>
                       <div className="card m-4">
