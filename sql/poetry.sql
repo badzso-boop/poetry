@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2024. Jan 03. 00:43
+-- Létrehozás ideje: 2024. Jan 14. 18:41
 -- Kiszolgáló verziója: 10.4.25-MariaDB
 -- PHP verzió: 8.1.10
 
@@ -43,7 +43,6 @@ CREATE TABLE `albums` (
 
 INSERT INTO `albums` (`album_id`, `user_id`, `title`, `description`, `creation_date`) VALUES
 (1, 5, 'Az én albumom', 'Ez az album tartalmazza a kedvenc verseimet.', '2023-12-30 18:34:37'),
-(5, 5, 'Az én 2. albumom', 'Ez az album tartalmazza a kedvenc verseimet.', '2023-12-31 13:24:07'),
 (11, 10, 'Saját', 'ez egy próba leírás a sajáthoz', '2024-01-02 22:03:02');
 
 -- --------------------------------------------------------
@@ -64,10 +63,6 @@ CREATE TABLE `album_poems` (
 INSERT INTO `album_poems` (`album_id`, `poem_id`) VALUES
 (1, 3),
 (1, 6),
-(1, 7),
-(5, 9),
-(5, 10),
-(5, 11),
 (11, 14);
 
 -- --------------------------------------------------------
@@ -89,17 +84,17 @@ CREATE TABLE `comments` (
 --
 
 INSERT INTO `comments` (`comment_id`, `user_id`, `poem_id`, `comment_text`, `date_commented`) VALUES
-(1, 1, 3, 'Great poem!', '2023-12-29 22:42:22'),
-(2, 1, 3, 'I love this!', '2023-12-29 22:42:22'),
-(3, 1, 3, 'Beautifully written.', '2023-12-29 22:42:22'),
-(4, 1, 3, 'Deep thoughts.', '2023-12-29 22:42:22'),
-(5, 1, 3, 'Fantastic work.', '2023-12-29 22:42:22'),
+(3, 1, 3, 'Masik anyadat', '2023-12-29 22:42:22'),
 (6, 9, 11, 'Amazing work!', '2023-12-29 22:42:32'),
 (7, 9, 11, 'This is outstanding.', '2023-12-29 22:42:32'),
 (8, 9, 11, 'Im impressed!', '2023-12-29 22:42:32'),
 (9, 9, 11, 'Well done!', '2023-12-29 22:42:32'),
 (10, 9, 11, 'Captivating.', '2023-12-29 22:42:32'),
-(13, 5, 3, 'Ez Egy uj komment', '2023-12-30 14:13:22');
+(15, 5, 6, 'Hali', '2024-01-11 20:51:33'),
+(17, 5, 6, 'ejha', '2024-01-11 20:55:31'),
+(18, 5, 14, 'gyönyörű', '2024-01-11 20:56:16'),
+(19, 5, 14, 'ez az en versem am :(', '2024-01-11 20:56:58'),
+(20, 5, 12, 'na ez nem szep dolog :(', '2024-01-11 20:59:52');
 
 -- --------------------------------------------------------
 
@@ -154,13 +149,8 @@ CREATE TABLE `likes` (
 --
 
 INSERT INTO `likes` (`like_id`, `user_id`, `poem_id`, `date_liked`) VALUES
-(1, 1, 3, '2023-12-29 22:46:53'),
-(2, 4, 3, '2023-12-29 22:46:53'),
-(3, 5, 3, '2023-12-29 22:46:53'),
-(4, 9, 3, '2023-12-29 22:46:53'),
 (5, 1, 11, '2023-12-29 22:46:53'),
-(6, 9, 11, '2023-12-29 22:46:53'),
-(7, 5, 7, '2023-12-29 23:18:26');
+(6, 9, 11, '2023-12-29 22:46:53');
 
 -- --------------------------------------------------------
 
@@ -181,15 +171,17 @@ CREATE TABLE `poems` (
 --
 
 INSERT INTO `poems` (`poem_id`, `title`, `content`, `user_id`, `creation_date`) VALUES
-(3, 'Cim', 'Elso versem', 5, '2023-12-28 22:02:22'),
+(3, 'Cimecske', 'masodik versem', 5, '2023-12-28 22:02:22'),
 (6, 'Nature', 'The beauty of nature...', 1, '2023-12-28 22:36:03'),
-(7, 'vers', 'new_user@example.com', 5, '2023-12-28 23:10:21'),
-(9, 'vers2', 'new_user@example.com2', 5, '2023-12-28 23:10:45'),
-(10, 'vers3', 'new_user@example.com3', 5, '2023-12-28 23:12:19'),
 (11, 'valami', 'valami', 9, '2023-12-29 00:14:30'),
 (12, 'proba', 'proba', 10, '2024-01-02 20:28:24'),
 (13, 'Anyad', 'ez a vers anyadrol szol', 10, '2024-01-02 20:59:02'),
-(14, 'Kertem', 'Lelkem mint egy virágoskert\nMit építeni s gondozni kell\nGyakran jönnek kártékony bogarak\nDe nem törik át a védelmező falakat\n\nMinden érzelmet egy egy virág képvisel\nS kertészkent figyelek ezrivel\nSokszor jönnek látogatók\nDe általában csak átutazók\n\nEddig egy társkertészre leltem\nAzonban sajna eltessékeltem\nKertemet azóta egyedül gondozom\nS bérmunkásokat néha osztozom', 10, '2024-01-02 22:02:49');
+(14, 'Kertem', 'Lelkem mint egy virágoskert\nMit építeni s gondozni kell\nGyakran jönnek kártékony bogarak\nDe nem törik át a védelmező falakat\n\nMinden érzelmet egy egy virág képvisel\nS kertészkent figyelek ezrivel\nSokszor jönnek látogatók\nDe általában csak átutazók\n\nEddig egy társkertészre leltem\nAzonban sajna eltessékeltem\nKertemet azóta egyedül gondozom\nS bérmunkásokat néha osztozom', 10, '2024-01-02 22:02:49'),
+(26, 'Szia', 'hali', 5, '2024-01-04 21:58:09'),
+(27, 'Ez most egy proba edit', 'ez egy nagyon szep vers koszonom hogy szerkeszthetem', 5, '2024-01-04 21:58:11'),
+(30, 'proba ismetelten', 'anyadat', 5, '2024-01-09 22:38:01'),
+(32, 'ez itt a toma verse', 'ez meg itt rimel', 5, '2024-01-09 22:41:47'),
+(33, 'Most irok egy rimet', 'Szemed csillogása\nAkar a kisgyermek vihogása', 5, '2024-01-10 20:55:38');
 
 -- --------------------------------------------------------
 
@@ -215,7 +207,13 @@ INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `profile_i
 (4, 'updated_user', 'updated_user@example.com', 'updated_secret456', 'https://example.com/updated_user.jpg', NULL),
 (5, 'new_user', '', '$2b$10$8sV/qcDhzvtA628098JY5OYHLJp51rleXCvgBQBoKTCPL0DAku/f6', NULL, 'admin'),
 (9, 'szmajli10', 'norbert.ujj@gmail.com', '$2b$10$wKUi0P27fvDVYG.RqSfldOolwMlBOSBbDJvT05evqbJKoyYUNcMXC', NULL, NULL),
-(10, 'anyad', 'anyad@anyad.hu', '$2b$10$7KKQcRqqy.DsFpKw10L1seL9zTH/0nZP.IpJGN6lMCVInsXI61xQW', NULL, 'user');
+(10, 'anyad', 'anyad@anyad.hu', '$2b$10$7KKQcRqqy.DsFpKw10L1seL9zTH/0nZP.IpJGN6lMCVInsXI61xQW', NULL, 'user'),
+(11, 'norbi', 'norbi@norbi.hu', '$2b$10$trjoezKkxzsjUiRYyfjX7.8oIsqKAlbibDJwC01pTcw1tDzyMh.G.', NULL, 'user'),
+(14, 'marci', 'marci@marci.hu', '$2b$10$yr3lqxT84J9hqLi0PCFOzuTtTTIv0IlXPAAcnXeaaF4r.5QQR2z8O', NULL, 'user'),
+(39, 'marci2', 'marci2@marci.hu', '$2b$10$R11d6D/oa5x.tOsqhA5qnuRRzGU7ZDRGhEJQMNOyX3xUkoZS3ojaG', NULL, 'user'),
+(40, 'marci3', 'marci3@marci.hu', '$2b$10$MZovUko6sVOyFtYwrffJeeIeoaE0ItQ3G8JiiOls6WKzNp7uxtVxC', NULL, 'user'),
+(41, 'marci4', 'marci4@marci.hu', '$2b$10$L2fNTwFsxPR.K7uMAGLIWeaf0j2/NodgN7DYS3yQcB6eGcUdKjQJK', NULL, 'user'),
+(42, 'marci12', 'marci12@marci.hu', '$2b$10$Osi6XBo0y.D6VGhcgukkUelE.w7A4sNPUEHE0pcartFhVl7CqN7ve', NULL, 'user');
 
 --
 -- Indexek a kiírt táblákhoz
@@ -290,13 +288,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT a táblához `albums`
 --
 ALTER TABLE `albums`
-  MODIFY `album_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `album_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT a táblához `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT a táblához `follows`
@@ -314,19 +312,19 @@ ALTER TABLE `images`
 -- AUTO_INCREMENT a táblához `likes`
 --
 ALTER TABLE `likes`
-  MODIFY `like_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `like_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT a táblához `poems`
 --
 ALTER TABLE `poems`
-  MODIFY `poem_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `poem_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT a táblához `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- Megkötések a kiírt táblákhoz
