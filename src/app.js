@@ -11,13 +11,13 @@ const albumRoutes = require('./routes/albumRoutes');
 const followRoutes = require('./routes/followRoutes');
 
 const app = express();
-const port = 3000;
+const port = 5000;
 
 // Middleware for parsing JSON
 app.use(express.json());
 
 const corsOptions = {
-  origin: ['http://localhost:62502'], // Engedélyezett eredet
+  origin: ['http://localhost:3000'], // Engedélyezett eredet
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true, // Engedélyezd a cookie-k elküldését
 };
