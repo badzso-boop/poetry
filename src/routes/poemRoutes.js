@@ -19,7 +19,7 @@ const checkAuth = (req, res, next) => {
 router.get('/', async (req, res) => {
   try {
     const [poemRows] = await pool.query(
-      'SELECT poems.*, users.username AS author FROM poems JOIN users ON poems.user_id = users.user_id'
+      'SELECT poems.*, users.username AS author FROM poems JOIN users ON poems.user_id = users.user_id;'
     );
 
     const poems = poemRows.map(async (row) => {
