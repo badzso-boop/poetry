@@ -5,7 +5,8 @@ const User = require('../models/user');
 
 // Egy middleware, ami ellenőrzi, hogy a felhasználó be van-e jelentkezve
 const checkAuth = (req, res, next) => {
-    if (req.session && req.session.userId && req.session.role == "admin") {
+    console.log(req.session)
+    if (req.session && req.session.userId) {
       return next();
     } else {
       res.status(401).json({ error: 'Unauthorized' });
@@ -60,81 +61,51 @@ router.get('/followers/:userId', async (req, res) => {
     }
 });
   
-// POST follow a user
+// POST follow/unfollow a user
 router.post('/follow/:followedId', checkAuth, async (req, res) => {
     const followerId = req.session.userId;
-    const followedId = req.params.followedId;  
+    const followedId = req.params.followedId;
+
+    console.log(followedId, followerId);
 
     try {
         // Ellenőrizzük, hogy a követett felhasználó létezik
         const [userRows] = await pool.query('SELECT * FROM users WHERE user_id = ?', [followedId]);
 
         if (userRows.length !== 1) {
-        return res.status(404).json({ error: 'User not found.' });
+            return res.status(404).json({ error: 'User not found.' });
         }
 
         // Ellenőrizzük, hogy a felhasználó ne követhesse önmagát
         if (String(followerId) === String(followedId)) {
-        return res.status(400).json({ error: 'You cannot follow yourself.' });
+            return res.status(400).json({ error: 'You cannot follow/unfollow yourself.' });
         }
 
         // Ellenőrizzük, hogy a felhasználó már követi-e a másik felhasználót
         const [existingFollowRows] = await pool.query('SELECT * FROM follows WHERE follower_id = ? AND followed_id = ?', [followerId, followedId]);
 
+        // Ha már követi, akkor töröljük a követést
         if (existingFollowRows.length > 0) {
-        return res.status(400).json({ error: 'You are already following this user.' });
+            const [deleteResult] = await pool.query('DELETE FROM follows WHERE follower_id = ? AND followed_id = ?', [followerId, followedId]);
+
+            if (deleteResult.affectedRows === 1) {
+                return res.json({ message: 'Unfollow successful.' });
+            } else {
+                return res.status(500).json({ error: 'Failed to unfollow user.' });
+            }
         }
 
-        // Hozzáadjuk a követést az adatbázishoz
+        // Ha még nem követi, akkor hozzáadjuk a követést az adatbázishoz
         const [result] = await pool.query('INSERT INTO follows (follower_id, followed_id, date_followed) VALUES (?, ?, NOW())', [followerId, followedId]);
 
         if (result.affectedRows === 1) {
-        res.json({ message: 'Follow successful.' });
+            res.json({ message: 'Follow successful.' });
         } else {
-        res.status(500).json({ error: 'Failed to follow user.' });
+            res.status(500).json({ error: 'Failed to follow user.' });
         }
     } catch (error) {
-        console.error('Error following user:', error.message);
+        console.error('Error following/unfollowing user:', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-  
-// DELETE unfollow a user
-router.delete('/unfollow/:followedId', checkAuth, async (req, res) => {
-    const followerId = req.session.userId;
-    const followedId = req.params.followedId;
-
-    try {
-    // Ellenőrizzük, hogy a követett felhasználó létezik
-    const [userRows] = await pool.query('SELECT * FROM users WHERE user_id = ?', [followedId]);
-
-    if (userRows.length !== 1) {
-        return res.status(404).json({ error: 'User not found.' });
-    }
-
-    // Ellenőrizzük, hogy a felhasználó ne követhesse ki önmagát
-    if (String(followerId) === String(followedId)) {
-        return res.status(400).json({ error: 'You cannot unfollow yourself.' });
-    }
-
-    // Ellenőrizzük, hogy a felhasználó már követi-e a másik felhasználót
-    const [existingFollowRows] = await pool.query('SELECT * FROM follows WHERE follower_id = ? AND followed_id = ?', [followerId, followedId]);
-
-    if (existingFollowRows.length === 0) {
-        return res.status(400).json({ error: 'You are not following this user.' });
-    }
-
-    // Töröljük a követést az adatbázisból
-    const [result] = await pool.query('DELETE FROM follows WHERE follower_id = ? AND followed_id = ?', [followerId, followedId]);
-
-    if (result.affectedRows === 1) {
-        res.json({ message: 'Unfollow successful.' });
-    } else {
-        res.status(500).json({ error: 'Failed to unfollow user.' });
-    }
-    } catch (error) {
-    console.error('Error unfollowing user:', error.message);
-    res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
