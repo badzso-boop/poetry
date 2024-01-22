@@ -9,6 +9,7 @@ const authRoutes = require('./routes/authRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const albumRoutes = require('./routes/albumRoutes');
 const followRoutes = require('./routes/followRoutes');
+const labelRoutes = require('./routes/labelRoutes');
 
 const app = express();
 const port = 5000;
@@ -40,6 +41,7 @@ app.use('/auth', authRoutes);
 app.use('/comments', commentRoutes);
 app.use('/albums', albumRoutes);
 app.use('/follows', followRoutes);
+app.use('/labels', labelRoutes)
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

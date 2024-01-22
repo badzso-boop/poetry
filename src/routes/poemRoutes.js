@@ -5,6 +5,7 @@ const pool = require('../db');
 const Poem = require('../models/poem');
 const Comment = require('../models/comment')
 const Like = require('../models/like')
+const Label = require('../models/label')
 
 // Egy middleware, ami ellenőrzi, hogy a felhasználó be van-e jelentkezve
 const checkAuth = (req, res, next) => {
@@ -38,7 +39,7 @@ router.get('/', async (req, res) => {
       const likes = likeRows.map((likeRow) => new Like(likeRow.like_id, likeRow.user_id, likeRow.poem_id, likeRow.date_liked, likeRow.username));
       const likeDb = likeRows.length;
 
-      return new Poem(row.poem_id, row.title, row.content, row.user_id, row.creation_date, row.author, likes, likeDb, comments);
+      return new Poem(row.poem_id, row.title, row.content, row.user_id, row.creation_date, row.author, likes, likeDb, comments, row.visible, row.comment, row.labels);
     });
 
     const poemsWithLikesComments = await Promise.all(poems);
@@ -61,12 +62,12 @@ router.post('/', async (req, res) => {
     const userId = req.session.userId;
 
     // A kérés testéből kiolvassuk a vers adatait
-    const { title, content } = req.body;
+    const { title, content, labels } = req.body;
   
     try {
       const [result] = await pool.query(
-        'INSERT INTO poems (title, content, user_id) VALUES (?, ?, ?)',
-        [title, content, userId]
+        'INSERT INTO poems (title, content, user_id, labels) VALUES (?, ?, ?, ?);',
+        [title, content, userId, labels]
       );
   
       const newPoem = new Poem(result.insertId, title, content, userId, new Date());
