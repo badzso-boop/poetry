@@ -183,35 +183,67 @@ router.delete('/:poemId', async (req, res) => {
     
 // PUT (update) a poem by ID
 router.put('/:poemId', async (req, res) => {
-const poemId = req.params.poemId;
-const { title, content } = req.body;
+  const poemId = req.params.poemId;
+  const { title, content, visible, comment } = req.body;
 
-try {
-  // Lekérjük a vers adatait az adatbázisból
-  const [poemResult] = await pool.query('SELECT user_id FROM poems WHERE poem_id = ?', [poemId]);
-  
-  if (poemResult.length === 0) {
-    // A vers nem található
-    return res.status(404).json({ error: 'Poem not found.' });
-  }
-  
-  const originalUserId = poemResult[0].user_id;
-  
-  // Ellenőrizzük, hogy a bejelentkezett felhasználó azonos-e a vers eredeti tulajdonosával
-  if (originalUserId !== req.session.userId) {
-    return res.status(403).json({ error: 'Unauthorized - User does not have permission to edit this poem.' });
-  }
-  
-  // A bejelentkezett felhasználó azonos a vers eredeti tulajdonosával, folytathatjuk a szerkesztést
-  const [updateResult] = await pool.query(
-    'UPDATE poems SET title = ?, content = ? WHERE poem_id = ?',
-    [title, content, poemId]
-    );
+  try {
+    // Lekérjük a vers adatait az adatbázisból
+    const [poemResult] = await pool.query('SELECT user_id, visible FROM poems WHERE poem_id = ?', [poemId]);
     
-    if (updateResult.affectedRows === 1) {
-      res.json({ message: 'Poem updated successfully.' });
-    } else {
-      res.status(500).json({ error: 'Internal Server Error - Failed to update poem.' });
+    if (poemResult.length === 0) {
+      // A vers nem található
+      return res.status(404).json({ error: 'Poem not found.' });
+    }
+    
+    const originalUserId = poemResult[0].user_id;
+    const originalVisible = visible;
+    const originalComment = comment;
+
+    // Ellenőrizzük, hogy a bejelentkezett felhasználó azonos-e a vers eredeti tulajdonosával
+    if (originalUserId !== req.session.userId) {
+      return res.status(403).json({ error: 'Unauthorized - User does not have permission to edit this poem.' });
+    }
+    
+    // Ellenőrizze, hogy a visible érték definiált-e
+    if (visible === undefined && comment === undefined) {
+      // A bejelentkezett felhasználó azonos a vers eredeti tulajdonosával, folytathatjuk a szerkesztést
+      const ezVisible = 1;
+      const ezComment = 1;
+      const [updateResult] = await pool.query(
+        'UPDATE poems SET title = ?, content = ?, visible = ?, comment = ? WHERE poem_id = ?',
+        [title, content, ezVisible,ezComment, poemId]
+      );
+
+      if (updateResult.affectedRows === 1) {
+        res.json({ message: 'Poem updated successfully.' });
+      } else {
+        res.status(500).json({ error: 'Internal Server Error - Failed to update poem.' });
+      }
+    } else if (visible !== undefined) {
+      // Példa: Ha a visible undefined, akkor frissítsd a többi adatot, de ne a visible-t
+      const [updateResult] = await pool.query(
+        'UPDATE poems SET visible = ? WHERE poem_id = ?',
+        [originalVisible, poemId]
+      );
+
+      if (updateResult.affectedRows === 1) {
+        res.json({ message: 'Poem updated successfully (excluding visible).' });
+      } else {
+        res.status(500).json({ error: 'Internal Server Error - Failed to update poem (excluding visible).' });
+      }
+    } else if(comment !== undefined) {
+      console.log("ez mar az ifen belul van", comment)
+      // Példa: Ha a visible undefined, akkor frissítsd a többi adatot, de ne a visible-t
+      const [updateResult] = await pool.query(
+        'UPDATE poems SET comment = ? WHERE poem_id = ?',
+        [originalComment, poemId]
+      );
+
+      if (updateResult.affectedRows === 1) {
+        res.json({ message: 'Poem updated successfully (excluding comment).' });
+      } else {
+        res.status(500).json({ error: 'Internal Server Error - Failed to update poem (excluding comment).' });
+      }
     }
   } catch (error) {
     console.error('Error updating poem:', error.message);

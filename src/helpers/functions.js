@@ -23,7 +23,7 @@ async function getPoemsByUser(userId) {
         let likes = likeRows.map((likeRow) => new Like(likeRow.like_id, likeRow.user_id, likeRow.poem_id, likeRow.date_liked, likeRow.username));
         const likeDb = likeRows.length;
 
-        const vers = new Poem(poem.poem_id, poem.title, poem.content, poem.user_id, poem.creation_date, poem.author, likes, likeDb, comments)
+        const vers = new Poem(poem.poem_id, poem.title, poem.content, poem.user_id, poem.creation_date, poem.author, likes, likeDb, comments, poem.visible, poem.comment, poem.labels)
 
         return vers
     }))
