@@ -54,7 +54,7 @@ async function getAlbums(albumId) {
                 let comments = commentRows.map((commentRow) => new Comment(commentRow.comment_id, commentRow.user_id, commentRow.poem_id, commentRow.comment_text, commentRow.date_commented, commentRow.commenter));
                 let likes = likeRows.map((likeRow) => new Like(likeRow.like_id, likeRow.user_id, likeRow.poem_id, likeRow.date_liked, likeRow.username));
 
-                const vers = new Poem(poem.poem_id, poem.title, poem.content, poem.user_id, poem.creation_date, poem.author, likes, comments)
+                const vers = new Poem(poem.poem_id, poem.title, poem.content, poem.user_id, poem.creation_date, poem.author, likes,likes.length, comments,poem.visible, poem.comment, poem.labels)
 
                 return vers
             }));
