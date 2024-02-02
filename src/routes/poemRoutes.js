@@ -232,7 +232,6 @@ router.put('/:poemId', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error - Failed to update poem (excluding visible).' });
       }
     } else if(comment !== undefined) {
-      console.log("ez mar az ifen belul van", comment)
       // Példa: Ha a visible undefined, akkor frissítsd a többi adatot, de ne a visible-t
       const [updateResult] = await pool.query(
         'UPDATE poems SET comment = ? WHERE poem_id = ?',

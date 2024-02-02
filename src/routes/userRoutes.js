@@ -23,7 +23,7 @@ const checkAuth = (req, res, next) => {
 router.get('/', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM users');
-    const users = rows.map(row => new User(row.user_id, row.username, row.email, row.password_hash, row.profile_img_url, row.role));
+    const users = rows.map(row => new User(row.user_id, row.username, row.email, row.password_hash, row.profile_img_url, row.role, null, null, row.bio));
     res.json(users);
   } catch (error) {
     console.error('Error fetching users:', error.message);
@@ -56,7 +56,7 @@ router.get('/:userId', async (req, res) => {
     }
 
     if (userRows.length === 1) {
-      const user = new User(userRows[0].user_id, userRows[0].username, userRows[0].email, userRows[0].password_hash, userRows[0].profile_image_url, userRows[0].role, poems, albumsWithPoems)
+      const user = new User(userRows[0].user_id, userRows[0].username, userRows[0].email, userRows[0].password_hash, userRows[0].profile_image_url, userRows[0].role, poems, albumsWithPoems, userRows[0].bio)
       res.json(user);
     } else {
       res.status(404).json({ error: 'User not found' });
@@ -88,12 +88,12 @@ router.delete('/:userId', async (req, res) => {
 // PUT (update) a user by ID
 router.put('/:userId', async (req, res) => {
     const userId = req.params.userId;
-    const { username, email, password, profileImgUrl } = req.body;
+    const { bio } = req.body;
   
     try {
       const [result] = await pool.query(
-        'UPDATE users SET username = ?, email = ?, password_hash = ?, profile_image_url = ?, role = ? WHERE user_id = ?',
-        [username, email, password, profileImgUrl, role, userId]
+        'UPDATE users SET  bio = ? WHERE user_id = ?',
+        [bio, userId]
       );
   
       if (result.affectedRows === 1) {
